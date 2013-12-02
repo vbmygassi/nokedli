@@ -165,7 +165,8 @@ Controller =
 		ClientM.fieldBY = Config.fieldBY *r;	
 		ClientM.pMaxXMove = 3 /10 *r;
 		ClientM.pMaxYMove = 3 /10 *r;
-		ClientM.playerH = Config.playerH *r; 
+		// ClientM.playerH = Config.playerH *r; 
+		ClientM.playerH = Config.playerH;
 		Controller.dispatch({message: ClientMessage.INIT_DONE});
 	},
 
@@ -1573,13 +1574,15 @@ Player = function()
 	{
 		switch(target.m.type){ 
 			case ClientM.TYPE_BALL: 
-				if(ClientM.ball.m.pos.z > this.m.pos.z +this.m.height){
-					Trace.out("ball is too high: " +ClientM.cycles);
+				if(ClientM.ball.m.pos.z > (this.m.pos.z +this.m.height)){
+					Trace.out("ball is too high: " 
+						+ClientM.cycles 
+						+": ball.z: " 
+						+ClientM.ball.m.pos.z 
+						+": player.h: " 
+						+(this.m.pos.z +this.m.height)
+					);
 					break;
-				}
-				else{
-					Trace.out("ball.z: " +ClientM.ball.m.pos.z);
-					Trace.out("player.height: " +this.m.pos.z +this.m.height);
 				}
 				if(this.m.iSig.kickL){
 					this.releaseKick(ClientM.LEFTFEET);
@@ -1657,7 +1660,7 @@ Player = function()
 		}
 		
 		ClientM.ball.nudge(new Pos(x, y, z));
-		Trace.out("guideBall():" +ClientM.cycles);
+		// Trace.out("guideBall():" +ClientM.cycles);
 		// this.m.team.dispatch({ref: this, message: PlayerMessage.BALL_GUIDED});	
 	}
 	
@@ -1684,7 +1687,7 @@ Player = function()
 		if(ClientM.NORTH == this.m.face){
 			Trace.out("realeaseKick():");
 			y = -0.70 *ClientM.scaleR;
-			z = +0.90 *ClientM.scaleR;
+			z = +0.40 *ClientM.scaleR;
 		}
 		else if(ClientM.SOUTH == this.m.face){
 			Trace.out("realeaseKick():");
