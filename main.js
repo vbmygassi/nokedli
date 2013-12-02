@@ -1575,7 +1575,7 @@ Player = function()
 		switch(target.m.type){ 
 			case ClientM.TYPE_BALL: 
 				if(ClientM.ball.m.pos.z > (this.m.pos.z +this.m.height)){
-					Trace.out("ball is too high: " 
+					Trace.out("ball is way too high up: " 
 						+ClientM.cycles 
 						+": ball.z: " 
 						+ClientM.ball.m.pos.z 
