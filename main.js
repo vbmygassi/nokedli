@@ -10,8 +10,8 @@ Config =
 	playerSpriteH:  32,    // height of player sprite
 	ballSpriteW:    32,    // width of ball sprite
 	ballSpriteH:    32,    // heigth of ball sprite
-	fieldSpriteH:  128,    // width of sprite (rasen)
-	fieldSpriteW:  128,    // height of sprite
+	fieldSpriteW:  360,    // width of background sprite 
+	fieldSpriteH:  240,    // height of background sprite 
 	// ------------------ 
 	keyWest:        37,    // key left
 	keyNorth:       38,    // key up
@@ -1543,7 +1543,7 @@ Player = function()
 			this.runControlled();
 		}
 		else {	
-			this.runCPU();	
+			// this.runCPU();	
 		}
 		HitReg.check(this);
 		PaintReg.add(this, parseInt(this.m.pos.z));
