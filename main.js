@@ -6,10 +6,10 @@ Config =
 	// ------------------
 	sprites:        "./assets/sprites.png",    // diss i do not know about
 	background:     "./assets/background.png", // some image assets	
-	playerSpriteW:  32,    // width of player sprite
-	playerSpriteH:  32,    // height of player sprite
-	ballSpriteW:    32,    // width of ball sprite
-	ballSpriteH:    32,    // heigth of ball sprite
+	playerSpriteW:  42,    // width of player sprite
+	playerSpriteH:  42,    // height of player sprite
+	ballSpriteW:    42,    // width of ball sprite
+	ballSpriteH:    42,    // heigth of ball sprite
 	fieldSpriteW:  360,    // width of background sprite 
 	fieldSpriteH:  240,    // height of background sprite 
 	// ------------------ 
@@ -430,7 +430,7 @@ Controller =
 	
 		ClientM.ctx.beginPath();
 		ClientM.ctx.strokeStyle = "#cccccc";
-		ClientM.ctx.lineWidth = 5;
+		ClientM.ctx.lineWidth = 3;
 		
 		// lines around field 
 		ClientM.ctx.moveTo(
@@ -906,8 +906,8 @@ PaintReg =
 BShadow = function()
 {
 	this.m = {};
-	this.m.spriteX = 0;
-	this.m.spriteY = 2;
+	this.m.spriteX = 5;
+	this.m.spriteY = 3;
 	this.m.spriteW = Config.ballSpriteW;
 	this.m.spriteH = Config.ballSpriteH;
 	this.m.pos = new Pos(0, 0, 0);
@@ -915,6 +915,7 @@ BShadow = function()
 	this.m.yoff = 1;
 	// this.m.bound = new Rect(0, 0, 1 *ClientM.scaleR, 1 *ClientM.scaleR); // 1m *1m
 	this.m.bound = new Rect(0, 0, this.m.spriteW, this.m.spriteH);
+	this.m.hit = new Rect(0, 0, this.m.spriteW, this.m.spriteH);
 
 	this.dispatch = function(e)	
 	{
@@ -983,8 +984,8 @@ Ball = function()
 		0
 	); 
 	this.m.hitB = 12;
-	this.m.spriteY = 0;
-	this.m.spriteX = 5;
+	this.m.spriteY = 3;
+	this.m.spriteX = 4;
 	this.m.spriteW = Config.ballSpriteW;
 	this.m.spriteH = Config.ballSpriteH;
 	this.m.shadow = null; 
@@ -996,12 +997,13 @@ Ball = function()
 	this.m.xx = 1;
 	this.m.tg = 3;
 	this.m.mg = 0;
-	this.m.fm = .12;
-	this.m.fg = .36;	
+	this.m.fm = 1;
+	this.m.fg = 0.32;	
 	this.m.dp = ClientM.NO;
 	this.m.mn = null;
 	// this.m.bound = new Rect(0, 0, 1 *ClientM.scaleR, 1 *ClientM.scaleR); // 1m *1m
 	this.m.bound = new Rect(0, 0, this.m.spriteW, this.m.spriteH);
+	this.m.hit = new Rect(12, 12, this.m.spriteW -12, this.m.spriteH -12);
 	this.m.at = 1.2;
 	
 	this.setPos = function(p)
@@ -1219,7 +1221,7 @@ Ball = function()
 
 	this.selectSprite = function()
 	{
-		this.m.spriteX = 5 -(parseInt(this.m.pos.z /5));
+		this.m.spriteX = 4 -(parseInt(this.m.pos.z /5));
 		if(this.m.spriteX < 0){ this.m.spriteX = 0; }
 	},
 	
@@ -1305,8 +1307,10 @@ Player = function()
 	this.m.baseR = new Rect(0, 0, 0, 0); // the rect the player supposed to be in
 	// this.m.bound = new Rect(0, 0, 1 *ClientM.scaleR, 1 *ClientM.scaleR); // 1m *1m
 	this.m.bound = new Rect(0, 0, this.m.spriteW, this.m.spriteH); 
-	this.m.dPos = new Pos(0, 0, 0);
-		
+	this.m.hit = new Rect(0, 0, this.m.spriteW -24, this.m.spriteH -24); 
+	this.m.dpos = new Pos(0, 0, 0);
+	this.m.sc = 0;	
+	
 	this.select = function(iSig)
 	{
 		this.m.iSig = (null == iSig) ? this.m.iSig : iSig;
@@ -1371,14 +1375,13 @@ Player = function()
 		this.m.height = ClientM.playerH;
 		this.m.maxXMove = ClientM.pMaxXMove;
 		this.m.maxYMove = ClientM.pMaxYMove;
-		// 
-		this.m.spriteX = parseInt(Math.random() *5);
-		// 
-		this.m.spriteY = 1;
-		this.m.body = ClientM.NORTH;
+		this.m.spriteX = 0;
+		this.m.spriteY = 0;
+		this.m.body = ClientM.SOUTH;
+		this.m.face = ClientM.SOUTH;
+		this.m.rdir = ClientM.AHEAD;
 		if(ClientM.GUEST == team.m.playstate){
-			this.m.spriteY = 3;
-			this.m.body = ClientM.SOUTH;
+			this.m.body = ClientM.NORTH;
 		}
 		// 
 		HitReg.add(this);
@@ -1497,11 +1500,11 @@ Player = function()
 
 	this.runCPU = function()
 	{
-		this.m.dPos.x = ClientM.fieldBX 
+		this.m.dpos.x = ClientM.fieldBX 
 			+this.m.baseR.x
 			-this.m.bound.mx;
 
-		this.m.dPos.y = ClientM.fieldBY 
+		this.m.dpos.y = ClientM.fieldBY 
 			+this.m.baseR.y
 			-this.m.bound.my;
 	
@@ -1509,16 +1512,16 @@ Player = function()
 		this.m.iSig.north = false;	
 		this.m.iSig.west = false;
 		this.m.iSig.south = false;
-		if(this.m.pos.x <= this.m.dPos.x){ 
+		if(this.m.pos.x <= this.m.dpos.x){ 
 			this.m.iSig.east = true; 
 		}
-		else if(this.m.pos.y >= this.m.dPos.x){ 
+		else if(this.m.pos.y >= this.m.dpos.x){ 
 			this.m.iSig.west = true; 
 		}
-		if(this.m.pos.y <= this.m.dPos.y){ 
+		if(this.m.pos.y <= this.m.dpos.y){ 
 			this.m.iSig.south = true; 
 		}
-		else if(this.m.dPos.y >= this.m.dPos.y){ 
+		else if(this.m.dpos.y >= this.m.dpos.y){ 
 			this.m.iSig.north = true; 
 		}
 		// this.setRunDir();	
@@ -1526,7 +1529,8 @@ Player = function()
 		this.setXStep();
 		this.setYStep();
 		this.setPlayerPos();
-	}
+		this.selectSprite();
+	},
 
 	this.runControlled = function()
 	{
@@ -1535,8 +1539,21 @@ Player = function()
 		this.setXStep();
 		this.setYStep();
 		this.setPlayerPos();
-	}	
-	
+		this.selectSprite();
+	},	
+
+	this.selectSprite = function()
+	{
+		this.m.sc++;
+		if(2 != this.m.sc){
+			return;
+		}
+		this.m.sc = 0;
+		this.m.spriteX++;
+		if(this.m.spriteX >= 6){ this.m.spriteX = 0; }
+		if(this.m.ym == 0){ this.m.spriteX = 0; }
+	},
+
 	this.run = function()
 	{
 		if(this.selected){
@@ -1553,7 +1570,6 @@ Player = function()
 	},
 	
 	// player hits a target - new placement of *?both
-	// tests...
 	this.corr = function(target)
 	{
 		switch(target.m.type){ 
@@ -1957,27 +1973,27 @@ HitReg =
 			}
 			
 			// ref is on the left side of object 
-			if(ref.m.pos.x +ref.m.bound.w < temp.m.pos.x){
+			if(ref.m.pos.x +ref.m.hit.w < temp.m.pos.x){
 				continue;
 			}
 		
 			// ref is on the right side
-			if(ref.m.pos.x > temp.m.pos.x +temp.m.bound.w){
+			if(ref.m.pos.x > temp.m.pos.x +temp.m.hit.w){
 				continue;
 			}
 
 			//  ref is north	
-			if(ref.m.pos.y +ref.m.bound.h < temp.m.pos.y){
+			if(ref.m.pos.y +ref.m.hit.h < temp.m.pos.y){
 				continue;
 			}
 	
 			// ref is south	
-			if(ref.m.pos.y > temp.m.pos.y +temp.m.bound.h){
+			if(ref.m.pos.y > temp.m.pos.y +temp.m.hit.h){
 				continue;
 			}
 
 			// ref hits object from "east"
-			if(ref.m.pos.x < temp.m.pos.x +temp.m.bound.w){
+			if(ref.m.pos.x < temp.m.pos.x +temp.m.hit.w){
 				ref.corr(temp);
 				continue;
 			}
@@ -1989,13 +2005,13 @@ HitReg =
 			}
 			
 			// ref hits object from "west"
-			if(ref.m.pos.x +ref.m.bound.w < temp.m.pos.x -temp.m.bound.w){
+			if(ref.m.pos.x +ref.m.hit.w < temp.m.pos.x -temp.m.hit.w){
 				ref.corr(temp);
 				continue;
 			}
 
 			// ref hits object from "north"
-			if(ref.m.pos.y +ref.m.bound.h < temp.m.pos.y +temp.m.bound.h){
+			if(ref.m.pos.y +ref.m.hit.h < temp.m.pos.y +temp.m.hit.h){
 				ref.corr(temp);
 				continue;
 			}
