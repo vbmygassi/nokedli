@@ -430,7 +430,7 @@ Controller =
 	
 		ClientM.ctx.beginPath();
 		ClientM.ctx.strokeStyle = "#cccccc";
-		ClientM.ctx.lineWidth = 3;
+		ClientM.ctx.lineWidth = 5;
 		
 		// lines around field 
 		ClientM.ctx.moveTo(
@@ -1073,7 +1073,6 @@ Ball = function()
 		if(this.m.mn.z <= 0){
 			this.m.mn.z = 0;
 		}
-		Trace.out("zBounce(): " +ClientM.cycles +":" +this.m.mn.z);
 		this.nudge(this.m.mn);
 	}
 	
@@ -1216,7 +1215,7 @@ Ball = function()
 		this.m.shadow.run(this);
 		this.selectSprite();
 		
-		PaintReg.add(this, parseInt(this.m.pos.z +1));
+		PaintReg.add(this, parseInt(this.m.pos.z));
 	},
 
 	this.selectSprite = function()
@@ -1958,58 +1957,48 @@ Cam = function()
 
 HitReg = 
 {
-	ary: null,
+	ary: [],
 	add: function(ref){
-		if(null == HitReg.ary){ HitReg.ary = []; }
 		HitReg.ary.push(ref);
 	},
 	check: function(ref){
 		for(idx in HitReg.ary){
 			temp = HitReg.ary[idx];
-			
 			// ref wont hit ref 
-			if(temp == ref){
-				continue;
+			if(temp == ref){ 
+				continue; 
 			}
-			
 			// ref is on the left side of object 
 			if(ref.m.pos.x +ref.m.hit.w < temp.m.pos.x){
 				continue;
 			}
-		
 			// ref is on the right side
 			if(ref.m.pos.x > temp.m.pos.x +temp.m.hit.w){
 				continue;
 			}
-
 			//  ref is north	
 			if(ref.m.pos.y +ref.m.hit.h < temp.m.pos.y){
 				continue;
 			}
-	
 			// ref is south	
 			if(ref.m.pos.y > temp.m.pos.y +temp.m.hit.h){
 				continue;
 			}
-
 			// ref hits object from "east"
 			if(ref.m.pos.x < temp.m.pos.x +temp.m.hit.w){
 				ref.corr(temp);
 				continue;
 			}
-			
 			// ref hits object from "west"
 			if(ref.m.pos.y > temp.m.pos.y){
 				ref.corr(temp);
 				continue;
 			}
-			
 			// ref hits object from "west"
 			if(ref.m.pos.x +ref.m.hit.w < temp.m.pos.x -temp.m.hit.w){
 				ref.corr(temp);
 				continue;
 			}
-
 			// ref hits object from "north"
 			if(ref.m.pos.y +ref.m.hit.h < temp.m.pos.y +temp.m.hit.h){
 				ref.corr(temp);
