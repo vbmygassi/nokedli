@@ -944,7 +944,6 @@ BShadow = function()
 		temp = ball.m.pos.z;
 		if(temp <= 0){ temp = 0; }
 		this.m.pos.x += temp +1;
-		this.m.pos.y += temp +1;
 	},
 
 	this.paint = function()
@@ -2182,29 +2181,29 @@ testKick = function(idx){
 		case 1:
 			ClientM.ball.nudge(new Pos(
 				+0.00, 
-				+0.16 *Config.scaleR, 
+				+0.42 *Config.scaleR, 
 				+0.00
 			));
 			break;
 		case 2:
 			ClientM.ball.nudge(new Pos(
-				-0.09 *Config.scaleR, 
-				-0.12 *Config.scaleR, 
-				+0.07 *Config.scaleR
+				-0.50 *Config.scaleR, 
+				-0.00 *Config.scaleR, 
+				+0.00 *Config.scaleR
 			));
 			break;
 		case 3:
 			ClientM.ball.nudge(new Pos(
-				+0.20 *Config.scaleR, 
-				-0.12 *Config.scaleR, 
+				+0.50 *Config.scaleR, 
+				-0.00 *Config.scaleR, 
 				-0.11 *Config.scaleR
 			));	
 			break;
 		case 4:
 			ClientM.ball.nudge(new Pos(
 				+0.00 *Config.scaleR, 
-				+0.14 *Config.scaleR, 
-				+0.03 *Config.scaleR
+				+0.50 *Config.scaleR, 
+				+0.00 *Config.scaleR
 			));
 			break;
 		case 5: 
@@ -2217,7 +2216,7 @@ testKick = function(idx){
 		case 6: 
 			ClientM.ball.nudge(new Pos(
 				+0.60 *Config.scaleR, 
-				+0.00, 
+				+0.60 *Config.scaleR, 
 				+0.00
 			));
 			break;
@@ -2239,7 +2238,7 @@ testKick = function(idx){
 			ClientM.ball.nudge(new Pos(
 				+0.08 *Config.scaleR, 
 				+0.00 *Config.scaleR,
-				-0.10 *Config.scaleR // würde gehen.. schuss nach unten
+				-0.10 *Config.scaleR
 			));
 			break;
 
