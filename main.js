@@ -1004,6 +1004,9 @@ Ball = function()
 	// this.m.bound = new Rect(0, 0, 1 *ClientM.scaleR, 1 *ClientM.scaleR); // 1m *1m
 	this.m.bound = new Rect(0, 0, this.m.spriteW, this.m.spriteH);
 	this.m.hit = new Rect(12, 12, this.m.spriteW -12, this.m.spriteH -12);
+	this.m.g = 9.80665;
+	this.m.t = 0;
+	this.m.mz = 0;
 	
 	this.setPos = function(p)
 	{
@@ -1072,6 +1075,7 @@ Ball = function()
 		if(this.m.mn.z <= 0){
 			this.m.mn.z = 0;
 		}
+		Trace.out("zBounce():");
 		this.nudge(this.m.mn);
 	}
 	
@@ -1080,6 +1084,7 @@ Ball = function()
 		this.m.xd = p.x -this.m.pos.x;
 		this.m.yd = p.y -this.m.pos.y;
 		this.m.zd = p.z -this.m.pos.z;
+		this.m.mz = this.m.zd;
 
 		this.m.dp = ClientM.NO;
 		
@@ -1113,6 +1118,8 @@ Ball = function()
 				if(0 != this.m.yd){ this.m.yy = this.m.zd /this.m.yd; };
 				break;
 		}
+
+		this.m.t = 0;
 	
 	},
 	
@@ -1202,6 +1209,16 @@ Ball = function()
 				break;
 		}
 
+		z = this.m.mz -0.5 *this.m.g *(this.m.t *this.m.t);
+		z += this.m.zd;
+		this.m.t += 0.30;
+		if(z <= 0){
+			z = 0;
+			this.zBounce();
+		}
+		this.m.pos.z = z;
+		
+		/*
 		z = this.m.pos.z;
 		z -= this.m.mg; 
 		this.m.mg += this.m.fg;
@@ -1210,6 +1227,7 @@ Ball = function()
 			this.zBounce();
 		}	
 		this.m.pos.z = z;
+		*/
 	
 		this.m.shadow.run(this);
 		this.selectSprite();
@@ -2261,8 +2279,8 @@ testKick = function(idx){
 		case 8:
 			ClientM.ball.nudge(new Pos(
 				+0.00, 
-				+0.25 *Config.scaleR, // 30 km/h
-				+0.15 *Config.scaleR
+				+0.00 *Config.scaleR, // 30 km/h
+				+0.40 *Config.scaleR
 			));
 			break;
 		case 9:
