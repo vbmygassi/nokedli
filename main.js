@@ -23,16 +23,16 @@ Config =
 	keyNextP:       78,    // key n 
 	keyPause:       80,    // key p 
 	// ------------------ 
-	fieldH:        115,     // height of field in meters
-	fieldW:         85,     // width in meters
+	fieldH:        115.00,  // height of field in meters
+	fieldW:         95.00,  // width in meters
 	fieldC:          9.15,  // cc in meters 
 	fieldG:          7.32,  // goal size in meters
-	field5:          5.5,   // 5m 
-	field11:        11,     // 11m
-	fieldBX:        10,     // field border (x)
-	fieldBY:        10,     // field border (y)
-	scaleR:         40,     // scale ratio > 6)
-	playerH:	 1.45,  // heigth of player in meters
+	field5:          5.50,  // 5m 
+	field11:        11.00,  // 11m
+	fieldBX:        10.00,  // field border (x)
+	fieldBY:        10.00,  // field border (y)
+	scaleR:         32.00,  // scale ratio > 6)
+	playerH:         1.45,  // heigth of player in meters
 	// ------------------ 
 	posRecLength:   10,     // thel length of recorded player positions
 	camRunOffset:  100,     // yoffset of cam (switches at heading of player)
@@ -984,7 +984,6 @@ Ball = function()
 			+10 *Config.scaleR, 
 		0
 	); 
-	this.m.hitB = 12;
 	this.m.spriteY = 3;
 	this.m.spriteX = 4;
 	this.m.spriteW = Config.ballSpriteW;
@@ -998,14 +997,13 @@ Ball = function()
 	this.m.xx = 1;
 	this.m.tg = 3;
 	this.m.mg = 0;
-	this.m.fm = 1;
-	this.m.fg = 0.32;	
+	this.m.fm = 0.12;
+	this.m.fg = 0.12;	
 	this.m.dp = ClientM.NO;
 	this.m.mn = null;
 	// this.m.bound = new Rect(0, 0, 1 *ClientM.scaleR, 1 *ClientM.scaleR); // 1m *1m
 	this.m.bound = new Rect(0, 0, this.m.spriteW, this.m.spriteH);
 	this.m.hit = new Rect(12, 12, this.m.spriteW -12, this.m.spriteH -12);
-	this.m.at = 1.2;
 	
 	this.setPos = function(p)
 	{
@@ -1286,7 +1284,6 @@ Player = function()
 {
 	this.m = {}; // memcache enhanced memory implementation :))
 	this.m.type = ClientM.TYPE_PLAYER; // obj type [naja]
-	this.m.hitB = Config.playerBorder; // hit // fixdiss: hitrect
 	this.m.selected = false; // selected player gets signal routed
 	this.m.spriteX = 0; // sprite tile pos x
 	this.m.spriteY = 0; // sprite tile pos y
@@ -2028,29 +2025,31 @@ HitReg =
 	{
 		ball = ClientM.ball;
 		if(ref.m.pos.x 
-			-ref.m.hitB 
-			+ref.m.spriteW < ball.m.pos.x){
+			-ref.m.hit.x 
+			+ref.m.hit.w < ball.m.pos.x){
 			return false;
 		}	
 		if(ref.m.pos.x > ball.m.pos.x 
-			-ball.m.hitB 
-			+ball.m.spriteW){
+			-ball.m.hit.x 
+			+ball.m.hit.w){
 			return false;
 		}
 		if(ref.m.pos.y 
-			-ref.m.hitB 
-			+ref.m.spriteH < ball.m.pos.y){
+			-ref.m.hit.y 
+			+ref.m.hit.h < ball.m.pos.y){
 			return false;
 		}
 		if(ref.m.pos.y > ball.m.pos.y 
-			-ball.m.hitB 
-			+ball.m.spriteH){
+			-ball.m.hit.y 
+			+ball.m.hit.h){
 			return false;
 		}
+		/*
 		if(ref.m.pos.z 
 			+ref.m.height < ball.m.pos.z){
 			return false;
 		}
+		*/
 		return true;
 	}
 }
