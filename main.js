@@ -943,7 +943,8 @@ BShadow = function()
 		this.m.pos.y = ball.m.pos.y;	
 		temp = ball.m.pos.z;
 		if(temp <= 0){ temp = 0; }
-		this.m.pos.x += temp;
+		this.m.pos.x += temp +1;
+		this.m.pos.y += temp +1;
 	},
 
 	this.paint = function()
@@ -1071,12 +1072,12 @@ Ball = function()
 		}
 		this.m.mn.x = this.m.xd;
 		this.m.mn.y = this.m.yd;
-		this.m.mn.z -= 1;
-		if(this.m.mn.z <= 0){
-			this.m.mn.z = 0;
+		this.m.mn.z /= 1.3; 
+		if(this.m.mn.z <= 1){
+			this.m.mn.z = 0; 
 		}
-		Trace.out("zBounce():");
-		this.nudge(this.m.mn);
+		Trace.out("zBounce():" +ClientM.cycles);
+		this.nudge(this.m.mn); 
 	}
 	
 	this.setTargetPos = function(p)
@@ -1118,8 +1119,6 @@ Ball = function()
 				if(0 != this.m.yd){ this.m.yy = this.m.zd /this.m.yd; };
 				break;
 		}
-
-		this.m.t = 0;
 	
 	},
 	
@@ -1187,16 +1186,18 @@ Ball = function()
 					this.m.zd -= this.m.fm;
 					if(this.m.zd <= 0){ 
 						this.m.zd = 0; 
-						this.m.dp = ClientM.NO;
+						this.m.mz = this.m.pos.z;
+						this.m.t = 0;
 					}
 				}
-				else if(0 > this.m.zd){
-					this.m.pos.z += this.m.zd;
-					this.m.zd += this.m.fm;
-					if(this.m.zd >= 0){ 
-						this.m.zd = 0; 
-						this.m.dp = ClientM.NO;
+				else if(0 >= this.m.zd){
+					z = this.m.mz -0.5 *this.m.g *(this.m.t *this.m.t);
+					this.m.t += 0.20;
+					if(z <= 0){
+						z = 0;
+						this.zBounce();
 					}
+					this.m.pos.z = z;	
 				}
 				if(0 != this.m.yd){
 					this.m.yd = this.m.zd /this.m.yy;
@@ -1209,15 +1210,6 @@ Ball = function()
 				break;
 		}
 
-		z = this.m.mz -0.5 *this.m.g *(this.m.t *this.m.t);
-		z += this.m.zd;
-		this.m.t += 0.30;
-		if(z <= 0){
-			z = 0;
-			this.zBounce();
-		}
-		this.m.pos.z = z;
-		
 		/*
 		z = this.m.pos.z;
 		z -= this.m.mg; 
@@ -2279,15 +2271,15 @@ testKick = function(idx){
 		case 8:
 			ClientM.ball.nudge(new Pos(
 				+0.00, 
-				+0.00 *Config.scaleR, // 30 km/h
-				+0.40 *Config.scaleR
+				+0.00 *Config.scaleR, 
+				+0.20 *Config.scaleR
 			));
 			break;
 		case 9:
 			ClientM.ball.nudge(new Pos(
 				+0.08 *Config.scaleR, 
-				+0.50 *Config.scaleR, // 60 km/h
-				-0.30 *Config.scaleR
+				+0.00 *Config.scaleR,
+				-0.10 *Config.scaleR // würde gehen.. schuss nach unten
 			));
 			break;
 
