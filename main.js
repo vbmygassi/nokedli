@@ -24,7 +24,7 @@ Config =
 	keyPause:       80,    // key p 
 	// ------------------ 
 	fieldH:        115.00,  // height of field in meters
-	fieldW:         95.00,  // width in meters
+	fieldW:         85.00,  // width in meters
 	fieldC:          9.15,  // cc in meters 
 	fieldG:          7.32,  // goal size in meters
 	field5:          5.50,  // 5m 
@@ -165,7 +165,6 @@ Controller =
 		ClientM.fieldBY = Config.fieldBY *r;	
 		ClientM.pMaxXMove = 3 /10 *r;
 		ClientM.pMaxYMove = 3 /10 *r;
-		// ClientM.playerH = Config.playerH *r; 
 		ClientM.playerH = Config.playerH;
 		Controller.dispatch({message: ClientMessage.INIT_DONE});
 	},
@@ -995,17 +994,15 @@ Ball = function()
 	this.m.yy = 1;
 	this.m.zz = 1;
 	this.m.xx = 1;
-	this.m.tg = 3;
-	this.m.mg = 0;
-	this.m.fm = 0.2;
-	this.m.dp = ClientM.NO;
-	this.m.mn = null;
-	// this.m.bound = new Rect(0, 0, 1 *ClientM.scaleR, 1 *ClientM.scaleR); // 1m *1m
-	this.m.bound = new Rect(0, 0, this.m.spriteW, this.m.spriteH);
-	this.m.hit = new Rect(12, 12, this.m.spriteW -12, this.m.spriteH -12);
-	this.m.g = 9.80665;
-	this.m.t = 0;
+	this.m.fm = 0.30;
+	this.m.mn = new Pos(0, 0, 0);
 	this.m.mz = 0;
+	this.m.t = 0;
+	this.m.g = 9.80665;
+	this.m.dp = ClientM.NO;
+	this.m.hit = new Rect(12, 12, this.m.spriteW -12, this.m.spriteH -12);
+	this.m.bound = new Rect(0, 0, this.m.spriteW, this.m.spriteH);
+	// this.m.bound = new Rect(0, 0, 1 *ClientM.scaleR, 1 *ClientM.scaleR); // 1m *1m
 	
 	this.setPos = function(p)
 	{
@@ -1057,7 +1054,6 @@ Ball = function()
 			p.y +this.m.pos.y,
 			p.z +this.m.pos.z
 		));
-		this.m.mg = this.m.tg;
 	},
 
 	this.zBounce = function()
@@ -1070,8 +1066,8 @@ Ball = function()
 		}
 		this.m.mn.x = this.m.xd;
 		this.m.mn.y = this.m.yd;
-		this.m.mn.z /= 1.3; 
-		if(this.m.mn.z <= .2){
+		this.m.mn.z /= 2; 
+		if(this.m.mn.z <= 0.2){
 			this.m.mn.z = 0; 
 		}
 		Trace.out("zBounce():" +ClientM.cycles);
@@ -1182,7 +1178,7 @@ Ball = function()
 
 		this.m.shadow.run(this);
 		this.selectSprite();
-		
+	
 		PaintReg.add(this, parseInt(this.m.pos.z));
 	},
 
@@ -2230,14 +2226,14 @@ testKick = function(idx){
 		case 8:
 			ClientM.ball.nudge(new Pos(
 				+0.00, 
-				+0.00 *Config.scaleR, 
-				+0.18 *Config.scaleR
+				+1.36 *Config.scaleR, 
+				+0.50 *Config.scaleR
 			));
 			break;
 		case 9:
 			ClientM.ball.nudge(new Pos(
-				+0.08 *Config.scaleR, 
-				+0.00 *Config.scaleR,
+				-0.08 *Config.scaleR, 
+				-0.50 *Config.scaleR,
 				-0.10 *Config.scaleR
 			));
 			break;
