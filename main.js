@@ -1,6 +1,5 @@
 Config = 
 {
-	ctick:          30,    // camtime (pseudothread)
 	gtick:          30,    // playtime (pseudothread)
 	teamSize:       11,    // diss how many players in a team
 	// ------------------
@@ -1167,8 +1166,8 @@ Ball = function()
 			}
 		}
 		else if(0 >= this.m.zd){
-			z = this.m.mz -0.5 *this.m.g *(this.m.t *this.m.t);
-			this.m.t += 0.30;
+			z = this.m.mz -0.5 *(this.m.g /Config.scaleR) *(this.m.t *this.m.t);
+			this.m.t++;
 			if(z <= 0){
 				z = 0;
 				this.zBounce();
@@ -1184,7 +1183,8 @@ Ball = function()
 
 	this.selectSprite = function()
 	{
-		this.m.spriteX = 4 -(parseInt(this.m.pos.z /5));
+		magie = parseInt(this.m.pos.z /Config.scaleR /1.2);
+		this.m.spriteX = 4 -magie; // sprites den höhen zuordnen...
 		if(this.m.spriteX < 0){ this.m.spriteX = 0; }
 	},
 	
