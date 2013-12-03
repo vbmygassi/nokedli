@@ -998,8 +998,7 @@ Ball = function()
 	this.m.xx = 1;
 	this.m.tg = 3;
 	this.m.mg = 0;
-	this.m.fm = 0.12;
-	this.m.fg = 0.12;	
+	this.m.fm = 0.2;
 	this.m.dp = ClientM.NO;
 	this.m.mn = null;
 	// this.m.bound = new Rect(0, 0, 1 *ClientM.scaleR, 1 *ClientM.scaleR); // 1m *1m
@@ -1073,7 +1072,7 @@ Ball = function()
 		this.m.mn.x = this.m.xd;
 		this.m.mn.y = this.m.yd;
 		this.m.mn.z /= 1.3; 
-		if(this.m.mn.z <= 1){
+		if(this.m.mn.z <= .2){
 			this.m.mn.z = 0; 
 		}
 		Trace.out("zBounce():" +ClientM.cycles);
@@ -1086,7 +1085,6 @@ Ball = function()
 		this.m.yd = p.y -this.m.pos.y;
 		this.m.zd = p.z -this.m.pos.z;
 		this.m.mz = this.m.zd;
-
 		this.m.dp = ClientM.NO;
 		
 		if(Math.abs(this.m.yd) >= Math.abs(this.m.xd)
@@ -1097,11 +1095,7 @@ Ball = function()
 			&& Math.abs(this.m.xd) > Math.abs(this.m.zd)){ 
 				this.m.dp = ClientM.X; 
 			}
-		if(Math.abs(this.m.zd) >= Math.abs(this.m.xd) 
-			&& Math.abs(this.m.zd) > Math.abs(this.m.yd)){ 
-				this.m.dp = ClientM.Z; 
-			}
-
+		
 		switch(this.m.dp){
 			case ClientM.Y:
 				this.m.xx = this.m.yy = 1;
@@ -1112,11 +1106,6 @@ Ball = function()
 				this.m.yy = this.m.zz = 1;
 				if(0 != this.m.yd){ this.m.yy = this.m.xd /this.m.yd; };
 				if(0 != this.m.zd){ this.m.zz = this.m.xd /this.m.zd; };
-				break;
-			case ClientM.Z:
-				this.m.xx = this.m.yy = 1;
-				if(0 != this.m.xd){ this.m.xx = this.m.zd /this.m.xd; };
-				if(0 != this.m.yd){ this.m.yy = this.m.zd /this.m.yd; };
 				break;
 		}
 	
@@ -1147,10 +1136,6 @@ Ball = function()
 					this.m.xd = this.m.yd /this.m.xx;
 					this.m.pos.x += this.m.xd;
 				}
-				if(0 != this.m.zd){
-					this.m.zd = this.m.yd /this.m.zz;
-					this.m.pos.z += this.m.zd;
-				}
 				break;
 			
 			case ClientM.X:
@@ -1174,53 +1159,28 @@ Ball = function()
 					this.m.yd = this.m.xd /this.m.yy;
 					this.m.pos.y += this.m.yd;
 				}
-				if(0 != this.m.zd){
-					this.m.zd = this.m.xd /this.m.zz;
-					this.m.pos.z += this.m.zd;
-				}
-				break;
-			
-			case ClientM.Z:
-				if(0 < this.m.zd){
-					this.m.pos.z += this.m.zd;
-					this.m.zd -= this.m.fm;
-					if(this.m.zd <= 0){ 
-						this.m.zd = 0; 
-						this.m.mz = this.m.pos.z;
-						this.m.t = 0;
-					}
-				}
-				else if(0 >= this.m.zd){
-					z = this.m.mz -0.5 *this.m.g *(this.m.t *this.m.t);
-					this.m.t += 0.20;
-					if(z <= 0){
-						z = 0;
-						this.zBounce();
-					}
-					this.m.pos.z = z;	
-				}
-				if(0 != this.m.yd){
-					this.m.yd = this.m.zd /this.m.yy;
-					this.m.pos.y += this.m.yd;
-				}
-				if(0 != this.m.xd){
-					this.m.xd = this.m.zd /this.m.xx;
-					this.m.pos.x += this.m.xd;
-				}
 				break;
 		}
+		
+		if(0 < this.m.zd){
+			this.m.pos.z += this.m.zd;
+			this.m.zd -= this.m.fm;
+			if(this.m.zd <= 0){ 
+				this.m.zd = 0; 
+				this.m.mz = this.m.pos.z;
+				this.m.t = 0;
+			}
+		}
+		else if(0 >= this.m.zd){
+			z = this.m.mz -0.5 *this.m.g *(this.m.t *this.m.t);
+			this.m.t += 0.30;
+			if(z <= 0){
+				z = 0;
+				this.zBounce();
+			}
+			this.m.pos.z = z;	
+		}
 
-		/*
-		z = this.m.pos.z;
-		z -= this.m.mg; 
-		this.m.mg += this.m.fg;
-		if(z <= 0){ 
-			z = 0;	
-			this.zBounce();
-		}	
-		this.m.pos.z = z;
-		*/
-	
 		this.m.shadow.run(this);
 		this.selectSprite();
 		
@@ -2228,30 +2188,30 @@ testKick = function(idx){
 			break;
 		case 2:
 			ClientM.ball.nudge(new Pos(
-				-0.20 *Config.scaleR, 
-				-0.45 *Config.scaleR, 
-				+0.00 *Config.scaleR
+				-0.09 *Config.scaleR, 
+				-0.12 *Config.scaleR, 
+				+0.07 *Config.scaleR
 			));
 			break;
 		case 3:
 			ClientM.ball.nudge(new Pos(
 				+0.20 *Config.scaleR, 
 				-0.12 *Config.scaleR, 
-				-0.10 *Config.scaleR
+				-0.11 *Config.scaleR
 			));	
 			break;
 		case 4:
 			ClientM.ball.nudge(new Pos(
 				+0.00 *Config.scaleR, 
-				+0.40 *Config.scaleR, 
-				+0.30 *Config.scaleR
+				+0.14 *Config.scaleR, 
+				+0.03 *Config.scaleR
 			));
 			break;
 		case 5: 
 			ClientM.ball.nudge(new Pos(
 				+0.00, 
 				+0.00, 
-				+0.20 *Config.scaleR
+				+0.05 *Config.scaleR
 			));
 			break;
 		case 6: 
@@ -2272,7 +2232,7 @@ testKick = function(idx){
 			ClientM.ball.nudge(new Pos(
 				+0.00, 
 				+0.00 *Config.scaleR, 
-				+0.20 *Config.scaleR
+				+0.18 *Config.scaleR
 			));
 			break;
 		case 9:
@@ -2286,16 +2246,16 @@ testKick = function(idx){
 		case 10:
 			ClientM.ball.nudge(new Pos(
 			 	-0.12 *Config.scaleR,
-				+1.00 *Config.scaleR, // 118,8 km/h
-				+0.20 *Config.scaleR
+				+1.00 *Config.scaleR,
+				+0.05 *Config.scaleR
 			));
 			break;
 
 		case 11:
 			ClientM.ball.nudge(new Pos(
 				+0.12 *Config.scaleR,
-				+2.00 *Config.scaleR, // 237,4 km/h
-				+0.20 *Config.scaleR
+				-1.19 *Config.scaleR,
+				+0.10 *Config.scaleR
 			));			
 			break;	
 	}
