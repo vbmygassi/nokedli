@@ -6,7 +6,7 @@
  */
 
 ComputerProgram = {
-	val: 0,
+	v: 0,
 	q: [],
 	proc: setInterval(function(){ ComputerProgram.run() }, 250),
 	compute: function(proc, method)
@@ -16,13 +16,13 @@ ComputerProgram = {
 	},
 	add: function()
 	{
-		ComputerProgram.val += 1;
-		console.log("välü: " +ComputerProgram.val);
+		ComputerProgram.v += 1;
+		console.log("välü: " +ComputerProgram.v);
 	},
 	sub: function()
 	{
-		ComputerProgram.val -= 1;
-		console.log("välü: " +ComputerProgram.val);
+		ComputerProgram.v -= 1;
+		console.log("välü: " +ComputerProgram.v);
 	},
 	run: function()
 	{
@@ -32,11 +32,9 @@ ComputerProgram = {
 	},
 }
 
-main = function()
-{
+if(true|false) 
+{ 
 	cl1 = setInterval(function(){ ComputerProgram.compute("test1", ComputerProgram.add); }, 1013);
 	cl2 = setInterval(function(){ ComputerProgram.compute("test2", ComputerProgram.add); }, 1987);
 	cl3 = setInterval(function(){ ComputerProgram.compute("test3", ComputerProgram.sub); },  797);
 }
-
-main();
