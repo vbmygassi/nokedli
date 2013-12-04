@@ -32,28 +32,11 @@ ComputerProgram = {
 	},
 }
 
-test1 = function()
-{
-	ComputerProgram.compute("test1", ComputerProgram.add);
-}
-
-test2 = function()
-{
-	ComputerProgram.compute("test2", ComputerProgram.add);
-}
-
-test3 = function()
-{
-	ComputerProgram.compute("test3", ComputerProgram.sub);
-}
-
 main = function()
 {
-	cl1 = setInterval(function(){ test1() }, 1013);
-	cl2 = setInterval(function(){ test2() }, 1987);
-	cl3 = setInterval(function(){ test3() },  797);
+	cl1 = setInterval(function(){ ComputerProgram.compute("test1", ComputerProgram.add); }, 1013);
+	cl2 = setInterval(function(){ ComputerProgram.compute("test2", ComputerProgram.add); }, 1987);
+	cl3 = setInterval(function(){ ComputerProgram.compute("test3", ComputerProgram.sub); },  797);
 }
 
 main();
-
-
