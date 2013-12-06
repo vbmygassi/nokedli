@@ -5,10 +5,10 @@ Config =
 	// ------------------
 	sprites:        "./assets/sprites.png",    // diss i do not know about
 	background:     "./assets/background.png", // some image assets	
-	playerSpriteW:  42,    // width of player sprite
-	playerSpriteH:  42,    // height of player sprite
-	ballSpriteW:    42,    // width of ball sprite
-	ballSpriteH:    42,    // heigth of ball sprite
+	playerSpriteW:  64,    // width of player sprite
+	playerSpriteH:  64,    // height of player sprite
+	ballSpriteW:    64,    // width of ball sprite
+	ballSpriteH:    64,    // heigth of ball sprite
 	fieldSpriteW:  360,    // width of background sprite 
 	fieldSpriteH:  240,    // height of background sprite 
 	// ------------------ 
@@ -30,7 +30,7 @@ Config =
 	field11:        11.00,  // 11m
 	fieldBX:        10.00,  // field border (x)
 	fieldBY:        10.00,  // field border (y)
-	scaleR:         32.00,  // scale ratio > 6)
+	scaleR:         40.00,  // scale ratio > 6) / "1" is "1m" // 1px is 1m // 40px is 1m
 	playerH:         1.45,  // heigth of player in meters
 	// ------------------ 
 	posRecLength:   10,     // thel length of recorded player positions
@@ -905,14 +905,13 @@ PaintReg =
 BShadow = function()
 {
 	this.m = {};
-	this.m.spriteX = 5;
-	this.m.spriteY = 3;
+	this.m.spriteX = 0;
+	this.m.spriteY = 1;
 	this.m.spriteW = Config.ballSpriteW;
 	this.m.spriteH = Config.ballSpriteH;
 	this.m.pos = new Pos(0, 0, 0);
-	this.m.xoff = 2;
-	this.m.yoff = 1;
-	// this.m.bound = new Rect(0, 0, 1 *ClientM.scaleR, 1 *ClientM.scaleR); // 1m *1m
+	this.m.xoff = 4;
+	this.m.yoff = 2;
 	this.m.bound = new Rect(0, 0, this.m.spriteW, this.m.spriteH);
 	this.m.hit = new Rect(0, 0, this.m.spriteW, this.m.spriteH);
 
@@ -941,7 +940,7 @@ BShadow = function()
 		this.m.pos.y = ball.m.pos.y;	
 		temp = ball.m.pos.z;
 		if(temp <= 0){ temp = 0; }
-		this.m.pos.x += temp +1;
+		this.m.pos.x += temp *5 +1;
 	},
 
 	this.paint = function()
@@ -982,7 +981,7 @@ Ball = function()
 			+10 *Config.scaleR, 
 		0
 	); 
-	this.m.spriteY = 3;
+	this.m.spriteY = 0;
 	this.m.spriteX = 4;
 	this.m.spriteW = Config.ballSpriteW;
 	this.m.spriteH = Config.ballSpriteH;
@@ -999,7 +998,7 @@ Ball = function()
 	this.m.t = 0;
 	this.m.g = 9.80665;
 	this.m.dp = ClientM.NO;
-	this.m.hit = new Rect(12, 12, this.m.spriteW -12, this.m.spriteH -12);
+	this.m.hit = new Rect(24, 24, this.m.spriteW -24, this.m.spriteH -24);
 	this.m.bound = new Rect(0, 0, this.m.spriteW, this.m.spriteH);
 	// this.m.bound = new Rect(0, 0, 1 *ClientM.scaleR, 1 *ClientM.scaleR); // 1m *1m
 	
@@ -1027,6 +1026,7 @@ Ball = function()
 	{
 		this.initShadow();
 		PaintReg.add(this, parseInt(this.m.pos.z +1));
+		HitReg.add(this);
 	},
 
 	this.initShadow = function()
@@ -1166,8 +1166,8 @@ Ball = function()
 			}
 		}
 		else if(0 >= this.m.zd){
-			z = this.m.mz -0.5 *(this.m.g /Config.scaleR) *(this.m.t *this.m.t);
-			this.m.t++;
+			z = this.m.mz -0.5 *(this.m.g) *(this.m.t *this.m.t);
+			this.m.t += 1/ (1000 /Config.gtick);
 			if(z <= 0){
 				z = 0;
 				this.zBounce();
@@ -1183,9 +1183,9 @@ Ball = function()
 
 	this.selectSprite = function()
 	{
-		magie = parseInt(this.m.pos.z /Config.scaleR /1.2);
-		this.m.spriteX = 4 -magie; // sprites den höhen zuordnen...
-		if(this.m.spriteX < 0){ this.m.spriteX = 0; }
+		magie = parseInt(this.m.pos.z);
+		this.m.spriteX = magie; // sprites den höhen zuordnen...
+		if(this.m.spriteX > 5){ this.m.spriteX = 5; }
 	},
 	
 	this.paint = function(z)
@@ -1251,7 +1251,7 @@ Player = function()
 	this.m.type = ClientM.TYPE_PLAYER; // obj type [naja]
 	this.m.selected = false; // selected player gets signal routed
 	this.m.spriteX = 0; // sprite tile pos x
-	this.m.spriteY = 0; // sprite tile pos y
+	this.m.spriteY = 2; // sprite tile pos y
 	this.m.spriteW = Config.playerSpriteW; // width of sprite
 	this.m.spriteH = Config.playerSpriteH; // height of sprite 
 	this.m.pos = new Pos(0, ClientM.fieldH /2, 0); // current pos
@@ -1269,7 +1269,7 @@ Player = function()
 	this.m.baseR = new Rect(0, 0, 0, 0); // the rect the player supposed to be in
 	// this.m.bound = new Rect(0, 0, 1 *ClientM.scaleR, 1 *ClientM.scaleR); // 1m *1m
 	this.m.bound = new Rect(0, 0, this.m.spriteW, this.m.spriteH); 
-	this.m.hit = new Rect(0, 0, this.m.spriteW -24, this.m.spriteH -24); 
+	this.m.hit = new Rect(24, 24, this.m.spriteW -24, this.m.spriteH -24); 
 	this.m.dpos = new Pos(0, 0, 0);
 	this.m.sc = 0;	
 	
@@ -1337,8 +1337,6 @@ Player = function()
 		this.m.height = ClientM.playerH;
 		this.m.maxXMove = ClientM.pMaxXMove;
 		this.m.maxYMove = ClientM.pMaxYMove;
-		this.m.spriteX = 0;
-		this.m.spriteY = 0;
 		this.m.body = ClientM.SOUTH;
 		this.m.face = ClientM.SOUTH;
 		this.m.rdir = ClientM.AHEAD;
@@ -1506,6 +1504,7 @@ Player = function()
 
 	this.selectSprite = function()
 	{
+		/*
 		this.m.sc++;
 		if(2 != this.m.sc){
 			return;
@@ -1514,6 +1513,7 @@ Player = function()
 		this.m.spriteX++;
 		if(this.m.spriteX >= 6){ this.m.spriteX = 0; }
 		if(this.m.ym == 0){ this.m.spriteX = 0; }
+		*/
 	},
 
 	this.run = function()
@@ -1557,7 +1557,7 @@ Player = function()
 				}
 				break;
 			default: 
-				target.m.spriteX = parseInt(Math.random() *5);
+				// target.m.spriteX = parseInt(Math.random() *5);
 			break;		
 		}
 	},
@@ -1649,11 +1649,11 @@ Player = function()
 		if(ClientM.NORTH == this.m.face){
 			Trace.out("realeaseKick():");
 			y = -0.70 *ClientM.scaleR;
-			z = +0.40 *ClientM.scaleR;
+			z = +0.05 *ClientM.scaleR;
 		}
 		else if(ClientM.SOUTH == this.m.face){
 			Trace.out("realeaseKick():");
-			y += .80 *ClientM.scaleR;
+			y += 0.80 *ClientM.scaleR;
 		}
 		
 		ClientM.ball.nudge(new Pos(x, y, z));
@@ -1947,39 +1947,42 @@ HitReg =
 			if(temp == ref){ 
 				continue; 
 			}
-			// ref is on the left side of object 
-			if(ref.m.pos.x +ref.m.hit.w < temp.m.pos.x){
+
+			// ref is on the right side of object 
+			if(ref.m.pos.x +ref.m.hit.x > temp.m.pos.x +temp.m.hit.w){
 				continue;
 			}
-			// ref is on the right side
-			if(ref.m.pos.x > temp.m.pos.x +temp.m.hit.w){
+
+			// ref is on the left side of temp
+			if(ref.m.pos.x +ref.m.hit.w < temp.m.pos.x +temp.m.hit.x){
 				continue;
 			}
 			//  ref is north	
-			if(ref.m.pos.y +ref.m.hit.h < temp.m.pos.y){
+			if(ref.m.pos.y +ref.m.hit.h < temp.m.pos.y +temp.m.hit.y){
 				continue;
 			}
 			// ref is south	
-			if(ref.m.pos.y > temp.m.pos.y +temp.m.hit.h){
+			if(ref.m.pos.y +ref.m.hit.y > temp.m.pos.y +temp.m.hit.h){
 				continue;
 			}
+			
 			// ref hits object from "east"
-			if(ref.m.pos.x < temp.m.pos.x +temp.m.hit.w){
+			if(ref.m.pos.x +ref.m.hit.x < temp.m.pos.x +temp.m.hit.w){
 				ref.corr(temp);
 				continue;
 			}
 			// ref hits object from "west"
-			if(ref.m.pos.y > temp.m.pos.y){
+			if(ref.m.pos.x +ref.m.pos.w > temp.m.pos.x +temp.m.hit.x){
 				ref.corr(temp);
 				continue;
 			}
-			// ref hits object from "west"
-			if(ref.m.pos.x +ref.m.hit.w < temp.m.pos.x -temp.m.hit.w){
+			// ref hits object from "south"
+			if(ref.m.pos.y +ref.m.hit.y < temp.m.pos.y -temp.m.hit.h){
 				ref.corr(temp);
 				continue;
 			}
 			// ref hits object from "north"
-			if(ref.m.pos.y +ref.m.hit.h < temp.m.pos.y +temp.m.hit.h){
+			if(ref.m.pos.y +ref.m.hit.h > temp.m.pos.y +temp.m.hit.y){
 				ref.corr(temp);
 				continue;
 			}
@@ -2226,8 +2229,8 @@ testKick = function(idx){
 		case 8:
 			ClientM.ball.nudge(new Pos(
 				+0.00, 
-				+1.36 *Config.scaleR, 
-				+0.50 *Config.scaleR
+				+0.12 *Config.scaleR, 
+				+0.06 *Config.scaleR
 			));
 			break;
 		case 9:
@@ -2250,7 +2253,7 @@ testKick = function(idx){
 			ClientM.ball.nudge(new Pos(
 				+0.12 *Config.scaleR,
 				-1.19 *Config.scaleR,
-				+0.10 *Config.scaleR
+				+0.05 *Config.scaleR
 			));			
 			break;	
 	}

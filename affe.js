@@ -3,6 +3,9 @@
  y(t) = v0 *t *sin(a) - (g /2) *t*t;
 */
 
+/*
+ 0.142
+ */
 
 compute = function(v, a, t)
 {
@@ -16,20 +19,25 @@ compute = function(v, a, t)
 }
 
 fps = 1;
-v = 200;
+v = 100;
 a = 12;
 t = 0;
 g = 9.80665;
 m = true;
 
+l = 0.142;
+
 while(m){
 	compute(v, a, t);
-	t += 1/fps;
-	v -= 1/fps; // tja, wie wird so ne bohne langsamer?
+	t += 1 /fps;
+	v -= 0.142 /fps; 
 	if(0 >= v){ v = 0; }
 	if(vr < 0){
 		console.log("bounce");
+		m = false;
+		/*
 		if(v > 0){ t = 0; } 
 		else { m = false; }
+		*/
 	}
 }
