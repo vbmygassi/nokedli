@@ -30,7 +30,7 @@ l = 0.142;
 while(m){
 	compute(v, a, t);
 	t += 1 /fps;
-	v -= 0.142 /fps; 
+	v -= l /fps; 
 	if(0 >= v){ v = 0; }
 	if(vr < 0){
 		console.log("bounce");
