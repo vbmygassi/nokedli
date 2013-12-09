@@ -1226,11 +1226,9 @@ Ball = function()
 	this.selectSprite = function()
 	{
 		magie = parseInt(this.m.pos.z);
+		if(0 > magie){ magie = 0; }
+		else if(5 < magie){ magie = 5; }
 		this.m.spriteX = magie; // sprites den höhen zuordnen...
-		if(this.m.spriteX > 5){ this.m.spriteX = 5; }
-		
-		// boahh... äkälärägend
-	
 	},
 	
 	this.paint = function(z)
@@ -1259,8 +1257,9 @@ Ball = function()
 				this.m.spriteH
 			);
 		}
-	},
+	}
 
+	/*
 	this.stopShot = function()
 	{
 		this.m.cs = this.m.slen;
@@ -1271,6 +1270,7 @@ Ball = function()
 		this.stopShot();
 		this.m.pos = pos;
 	}
+	*/
 }
 
 Pos = function(x, y, z)
