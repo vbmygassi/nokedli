@@ -1001,6 +1001,8 @@ Ball = function()
 	this.m.hit = new Rect(24, 24, this.m.spriteW -24, this.m.spriteH -24);
 	this.m.bound = new Rect(0, 0, this.m.spriteW, this.m.spriteH);
 	// this.m.bound = new Rect(0, 0, 1 *ClientM.scaleR, 1 *ClientM.scaleR); // 1m *1m
+	this.m.v = 0;
+	this.m.a = 0;
 	
 	this.setPos = function(p)
 	{
@@ -1045,16 +1047,6 @@ Ball = function()
 	this.deselect = function(){
 	},
 
-	this.nudge = function(p)
-	{
-		this.m.mn = p;
-		this.setTargetPos(new Pos(
-			p.x +this.m.pos.x,
-			p.y +this.m.pos.y,
-			p.z +this.m.pos.z
-		));
-	},
-
 	this.zBounce = function()
 	{
 		if(null == this.m.mn){
@@ -1073,14 +1065,18 @@ Ball = function()
 		this.nudge(this.m.mn); 
 	}
 	
-	this.setTargetPos = function(p)
+	this.nudge = function(p)
 	{
-		this.m.xd = p.x -this.m.pos.x;
-		this.m.yd = p.y -this.m.pos.y;
-		this.m.zd = p.z -this.m.pos.z;
-		this.m.mz = this.m.zd;
-		this.m.dp = ClientM.NO;
+		// calc angle z
+		// calc speed (x or y)	
+	
+		// horiz dominance	
+		this.m.xd = p.x;
+		this.m.yd = p.y;
+		this.m.zd = p.z;
 		
+		this.m.dp = ClientM.NO;
+	
 		if(Math.abs(this.m.yd) >= Math.abs(this.m.xd)
 			&& Math.abs(this.m.yd) > Math.abs(this.m.zd)){ 
 				this.m.dp = ClientM.Y; 
@@ -1102,7 +1098,17 @@ Ball = function()
 				if(0 != this.m.zd){ this.m.zz = this.m.xd /this.m.zd; };
 				break;
 		}
-	
+
+		// test values
+		this.m.a = 45;
+		this.m.v = 4;	
+		this.m.t = 0;
+		
+		// recs this nudge
+		this.m.mn = p;
+
+		// recs this ???
+		this.m.mz = this.m.zd;
 	},
 	
 	this.run = function()
@@ -1178,6 +1184,42 @@ Ball = function()
 		this.m.shadow.run(this);
 		this.selectSprite();
 	
+		PaintReg.add(this, parseInt(this.m.pos.z +1));
+	},
+
+	// overloads run :))
+	this.run = function()
+	{
+		// vertical movement 
+		// this.m.a : canonball shot angle
+		// this.m.t : time cycles since shot
+		// this.m.v : canonball shot speed
+		this.m.t += 1 /(1000 /Config.gtick); /* time increments by gtick */ 
+		this.m.v -= 0.142 /(1000 /Config.gtick); /* speed of *this lowers by magic 0.142 "ball flight thingy value" whithin in each tick */
+		vr = this.m.v *this.m.t *Math.sin(this.m.a /180 *Math.PI) -(this.m.g /2 *this.m.t *this.m.t);
+		hr = this.m.v *this.m.t *Math.cos(this.m.a /180 *Math.PI);
+		
+		Trace.out(
+			"hr: " +hr + "\t"+
+			"vr :" +vr + "\t"+
+			"v: " +this.m.v + "\t"+
+			"d: " +this.m.dp
+		);
+	
+		// switches the dominant horizontal direction
+		switch(this.m.dp){
+			// x and y are horizontal movements
+			case ClientM.Y:
+				break;
+			case ClientM.X:
+				break;
+		}
+
+		this.m.pos.z = vr *Config.scaleR;	
+		
+		this.m.shadow.run(this);
+		this.selectSprite();
+		
 		PaintReg.add(this, parseInt(this.m.pos.z +1));
 	},
 
