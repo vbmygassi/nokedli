@@ -1515,15 +1515,14 @@ Player = function()
 		this.m.team.dispatch({ref: this, message: PlayerMessage.BALL_RELEASED});	
 	},
 
-	// guides?
+	// guides the ball?
 	this.guideBall = function()
 	{
 		Controller.bindCam(this);
-	
 		ha = 0;	
 		switch(this.m.face){
 			case ClientM.NORTH:
-				ha = 90;
+				ha = +90;
 				break;
 			case ClientM.NE:
 				break;
@@ -1541,13 +1540,17 @@ Player = function()
 			case ClientM.EAST:
 				break;
 		}
-		
-		if(ClientM.BACK == this.m.rdir){  }
-
-		// now dissis...	
-		if(ClientM.ball.m.v <= 0){ // do not nudge all the time...
-			ClientM.ball.nudge(new Nudge(ha, +5, +1.2));
-			Trace.out("guideBall():" +ClientM.cycles);
+	
+		// nudge is not the guide	
+		if(ClientM.BACK == this.m.rdir){  
+			ClientM.ball.nudge(new Nudge(ha, 0, +1.2));
+		}
+		else {
+			// now dissis...	
+			if(ClientM.ball.m.v <= 0){ // do not nudge all the time...
+				ClientM.ball.nudge(new Nudge(ha, +5, +1.8));
+				Trace.out("guideBall():" +ClientM.cycles);
+			}
 		}
 		
 		// this.m.team.dispatch({ref: this, message: PlayerMessage.BALL_GUIDED});	
