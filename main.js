@@ -30,14 +30,14 @@ Config =
 	field11:        11.00,  // 11m
 	fieldBX:        10.00,  // field border (x)
 	fieldBY:        10.00,  // field border (y)
-	scaleR:         40.00,  // scale ratio > 6) / "1" is "1m" // 1px is 1m // 40px is 1m
+	scaleR:         42.00,  // scale ratio > 6) / "1" is "1m" // 1px is 1m // 40px is 1m
 	playerH:         1.45,  // heigth of player in meters
 	// ------------------ 
 	posRecLength:   10,     // thel length of recorded player positions
 	camRunOffset:  100,     // yoffset of cam (switches at heading of player)
 	// ------------------
-	camSlowDownXR:   8,     // slowdown rate of cam
-	camSlowDownYR:   8,
+	camSlowDownXR:   4,     // slowdown rate of cam
+	camSlowDownYR:   4,
 	// ------------------
 	drawBounds:   false,
 	drawSprites:  true,
@@ -940,7 +940,7 @@ BShadow = function()
 		this.m.pos.y = ball.m.pos.y;	
 		temp = ball.m.pos.z;
 		if(temp <= 0){ temp = 0; }
-		this.m.pos.x += temp *5 +1;
+		this.m.pos.x += temp *3 +1;
 	},
 
 	this.paint = function()
@@ -998,6 +998,7 @@ Ball = function()
 	this.m.flight = 0.046; // velocity loss of a ball in the air ... :))
 	this.m.xoff = 0;
 	this.m.yoff = 0;
+	this.m.zoff = 0;
 	
 	this.setPos = function(p)
 	{
@@ -1021,6 +1022,7 @@ Ball = function()
 
 	this.init = function()
 	{
+		this.m.g = 9.80665 /(1000 /Config.gtick); // m /s /33
 		this.initShadow();
 		PaintReg.add(this, parseInt(this.m.pos.z));
 		HitReg.add(this);
@@ -1044,25 +1046,26 @@ Ball = function()
 
 	this.zBounce = function()
 	{
-		Trace.out("zBounce():" +ClientM.cycles);
+		// Trace.out("zBounce():" +ClientM.cycles);
 		// this.nudge(this.m.mn);
 		// naaa...
-		this.m.va *= -1;
+		// this.m.va *= -1;
 	},
 	
 	this.nudge = function(n)
 	{
 		this.m.va = n.va;
 		this.m.ha = n.ha;
-		this.m.v = n.v;	
-		this.m.t = 0;
+		this.m.v = n.v;
+		// authsc	
+		this.m.t = 1 /2;
 	
 		// test purpose
 		// rec nudge
 		// this.m.mn = n;
 	
 		// rec pos of nudge
-		this.m.mp = this.m.pos;
+		this.m.mp = this.m.pos; 
 	},
 
 	this.run = function()
@@ -1072,11 +1075,16 @@ Ball = function()
 		// this.m.ha : canonball shot angle horz 
 		// this.m.t : time cycles since shot
 		// this.m.v : canonball shot speed
-		this.m.t += 1 /(1000 /Config.gtick); /* time increments by gtick */ 
-		this.m.v -= this.m.flight; /* speed of *this lowers by magic "ball flight thingy value" whithin in each tick */
+		
+		/* time increments by gtick */ 
+		this.m.t += 1 /(1000 /Config.gtick); 
+		
+		/* speed of *this lowers by magic "ball flight thingy value" whithin in each tick */
+		this.m.v -= this.m.flight; 
+		
 		vr = this.m.v *this.m.t *Math.sin(this.m.va /180 *Math.PI) -(this.m.g /2 *this.m.t *this.m.t);
 		hr = this.m.v *this.m.t *Math.cos(this.m.va /180 *Math.PI);
-	
+		
 		// fixdiss	
 		// bounce or some
 		if(this.m.v <= 0){
@@ -1085,21 +1093,21 @@ Ball = function()
 			this.zBounce();
 		}
 	
-		// the height of the ball	
+		// the height
 		this.m.pos.z = vr *Config.scaleR;	
 
+// this.m.ha++;
 		// horizontal
 		this.m.xoff = hr *Math.cos(this.m.ha *Math.PI /180) *Config.scaleR;
 		this.m.yoff = hr *Math.sin(this.m.ha *Math.PI /180) *Config.scaleR;
-	
+		
 		// uggly	
 		this.m.pos.x = this.m.mp.x +this.m.xoff;
 		this.m.pos.y = this.m.mp.y -this.m.yoff;
-	
+
 		// 
 		this.m.shadow.run(this);
 		this.selectSprite();
-	
 	
 		// next paint	
 		PaintReg.add(this, parseInt(this.m.pos.z));
@@ -1543,14 +1551,12 @@ Player = function()
 	
 		// nudge is not the guide	
 		if(ClientM.BACK == this.m.rdir){  
-			ClientM.ball.nudge(new Nudge(ha, 0, +1.2));
+			ClientM.ball.nudge(new Nudge(ha, 0, +0.5));
 		}
 		else {
 			// now dissis...	
-			if(ClientM.ball.m.v <= 0){ // do not nudge all the time...
-				ClientM.ball.nudge(new Nudge(ha, +5, +1.8));
-				Trace.out("guideBall():" +ClientM.cycles);
-			}
+			ClientM.ball.nudge(new Nudge(ha, +5, +0.9));
+			Trace.out("guideBall():" +ClientM.cycles);
 		}
 		
 		// this.m.team.dispatch({ref: this, message: PlayerMessage.BALL_GUIDED});	
@@ -2107,16 +2113,16 @@ testKick = function(idx){
 			ClientM.ball.nudge(new Nudge(-090, +005, +3));
 			break;
 		case 3:
-			ClientM.ball.nudge(new Nudge(+056, +000, +3));
+			ClientM.ball.nudge(new Nudge(+056, +020, +3));
 			break;
 		case 4:
 			ClientM.ball.nudge(new Nudge(+120, +020, +2));
 			break;
 		case 5: 
-			ClientM.ball.nudge(new Nudge(+000, +000, +2));
+			ClientM.ball.nudge(new Nudge(+000, +030, +2));
 			break;
 		case 6: 
-			ClientM.ball.nudge(new Nudge(-090, +000, +1.1));
+			ClientM.ball.nudge(new Nudge(-090, +045, +3));
 			break;
 		case 7:
 			break;
