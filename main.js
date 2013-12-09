@@ -993,9 +993,9 @@ Ball = function()
 	this.m.va = 0; // vertic angle
 	this.m.g = 9.80665; 
 	this.m.t = 0; // nudge cycles
-	this.m.mn = new Nudge(0, 0, 0); // copy of nudge
+	this.m.mn = new Nudge(0, 0, 0, 1); // copy of nudge
 	this.m.mp = this.m.pos // copy if pos
-	this.m.flight = 0.046; // velocity loss of a ball in the air ... :))
+	this.m.flight = 0.0246; // velocity loss of a ball in the air ... :))
 	this.m.xoff = 0;
 	this.m.yoff = 0;
 	this.m.zoff = 0;
@@ -1058,7 +1058,7 @@ Ball = function()
 		this.m.ha = n.ha;
 		this.m.v = n.v;
 		// authsc	
-		this.m.t = 1 /2;
+		this.m.t = n.kaka;
 	
 		// test purpose
 		// rec nudge
@@ -1150,11 +1150,12 @@ Ball = function()
 	}
 }
 
-Nudge = function(ha, va, v)
+Nudge = function(ha, va, v, kaka)
 {
 	this.ha = ha;
 	this.va = va;
 	this.v = v;
+	this.kaka = kaka;
 }
 
 Pos = function(x, y, z)
@@ -1551,11 +1552,11 @@ Player = function()
 	
 		// nudge is not the guide	
 		if(ClientM.BACK == this.m.rdir){  
-			ClientM.ball.nudge(new Nudge(ha, 0, +0.5));
+			ClientM.ball.nudge(new Nudge(ha, 0, +0.5, 0.5));
 		}
 		else {
 			// now dissis...	
-			ClientM.ball.nudge(new Nudge(ha, +5, +0.9));
+			ClientM.ball.nudge(new Nudge(ha, +5, +0.5, 1));
 			Trace.out("guideBall():" +ClientM.cycles);
 		}
 		
@@ -2107,22 +2108,22 @@ testKick = function(idx){
 	Controller.bindCam(ClientM.ball);
 	switch(idx){
 		case 1:
-			ClientM.ball.nudge(new Nudge(+090, +090, +3));
+			ClientM.ball.nudge(new Nudge(+090, +90, +2, 0.25));
 			break;
 		case 2:
-			ClientM.ball.nudge(new Nudge(-090, +005, +3));
+			ClientM.ball.nudge(new Nudge(-090, +1, +2, 0.25));
 			break;
 		case 3:
-			ClientM.ball.nudge(new Nudge(+056, +020, +3));
+			ClientM.ball.nudge(new Nudge(+056, +10, +2, 0.25));
 			break;
 		case 4:
-			ClientM.ball.nudge(new Nudge(+120, +020, +2));
+			ClientM.ball.nudge(new Nudge(+120, +20, +1, 0.25));
 			break;
 		case 5: 
-			ClientM.ball.nudge(new Nudge(+000, +030, +2));
+			ClientM.ball.nudge(new Nudge(-90, 0, +1, 1));
 			break;
 		case 6: 
-			ClientM.ball.nudge(new Nudge(-090, +045, +3));
+			ClientM.ball.nudge(new Nudge(-090, +45, +1, 0.25));
 			break;
 		case 7:
 			break;
