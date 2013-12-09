@@ -1100,7 +1100,7 @@ Ball = function()
 		}
 
 		// test values
-		this.m.a = 45;
+		this.m.a = 90;
 		this.m.v = 4;	
 		this.m.t = 0;
 		
