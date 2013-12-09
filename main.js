@@ -1178,7 +1178,7 @@ Ball = function()
 		this.m.shadow.run(this);
 		this.selectSprite();
 	
-		PaintReg.add(this, parseInt(this.m.pos.z));
+		PaintReg.add(this, parseInt(this.m.pos.z +1));
 	},
 
 	this.selectSprite = function()
@@ -1186,6 +1186,9 @@ Ball = function()
 		magie = parseInt(this.m.pos.z);
 		this.m.spriteX = magie; // sprites den höhen zuordnen...
 		if(this.m.spriteX > 5){ this.m.spriteX = 5; }
+		
+		// boahh... äkälärägend
+	
 	},
 	
 	this.paint = function(z)
@@ -1340,6 +1343,12 @@ Player = function()
 		this.m.body = ClientM.SOUTH;
 		this.m.face = ClientM.SOUTH;
 		this.m.rdir = ClientM.AHEAD;
+
+		// 	
+		this.m.pos.x = Math.random() *ClientM.fieldW;
+		this.m.pos.y = Math.random() *ClientM.fieldH;
+		
+		// fixdiss
 		if(ClientM.GUEST == team.m.playstate){
 			this.m.body = ClientM.NORTH;
 		}
@@ -1504,16 +1513,21 @@ Player = function()
 
 	this.selectSprite = function()
 	{
-		/*
+		// fixdiss steps / time / field
 		this.m.sc++;
-		if(2 != this.m.sc){
-			return;
-		}
+		if(2 != this.m.sc){ return; }
 		this.m.sc = 0;
-		this.m.spriteX++;
-		if(this.m.spriteX >= 6){ this.m.spriteX = 0; }
-		if(this.m.ym == 0){ this.m.spriteX = 0; }
-		*/
+		this.m.spriteY = 2;
+		if(ClientM.SOUTH == this.m.body){
+			this.m.spriteY = 3;
+		}
+
+		if(this.m.ym == 0){
+		}
+		else { 
+			this.m.spriteX++;
+			if(this.m.spriteX >= 6){ this.m.spriteX = 0; }
+		}
 	},
 
 	this.run = function()
@@ -1557,7 +1571,7 @@ Player = function()
 				}
 				break;
 			default: 
-				// target.m.spriteX = parseInt(Math.random() *5);
+				target.m.spriteX = parseInt(Math.random() *5);
 			break;		
 		}
 	},
