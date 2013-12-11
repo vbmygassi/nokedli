@@ -50,7 +50,6 @@ ClientM =
 	smg:          null,     // sprite image ref
 	bmg:          null,     // background image ref
 	ctx:          null,     // canvas graphics context
-	camProc:      null,     // cam proc 
 	gameProc:     null,     // game proc 
 	teamA:        null,     // 
 	teamB:        null,     // 
@@ -105,6 +104,7 @@ ClientM =
 	RUNNING:     18,
 	PAUSED:      19,
 	state:        0,
+	// -------------
 	X:          890,
 	Y:          892,
 	Z:          987,
@@ -351,7 +351,6 @@ Controller =
 	keyDown: function(e)
 	{
 		switch(e.keyCode){
-			
 			case Config.keyPause:
 				Controller.toggleClock();
 				break;
@@ -364,7 +363,6 @@ Controller =
 		if(null == ClientM.selectedP){ 
 			return false; 
 		}
-		
 		ClientM.selectedP.keyDown(e);
 	},
 
@@ -861,15 +859,6 @@ Controller =
 	zPaint: function()
 	{
 		PaintReg.run();
-	
-		ClientM.ctx.stroke();
-		ClientM.ctx.closePath();
-
-	},
-
-	zPaint: function()
-	{
-		PaintReg.run();
 	},
 
 	paint: function()
@@ -933,14 +922,15 @@ BShadow = function()
 	{
 		return this.m;
 	},
-	
+
 	this.run = function(ball)
 	{
 		this.m.pos.x = ball.m.pos.x;
 		this.m.pos.y = ball.m.pos.y;	
-		temp = ball.m.pos.z;
+		// calcs offset of shadow
+		temp = ball.m.pos.z *Config.scaleR /3;
 		if(temp <= 0){ temp = 0; }
-		this.m.pos.x += temp *3 +1;
+		this.m.pos.x += temp;
 	},
 
 	this.paint = function()
@@ -1058,7 +1048,7 @@ Ball = function()
 		this.m.ha = n.ha;
 		this.m.v = n.v;
 		// authsc	
-		this.m.t = n.kaka;
+		this.m.t = n.toffset;
 	
 		// test purpose
 		// rec nudge
@@ -1094,14 +1084,17 @@ Ball = function()
 		}
 	
 		// the height
-		this.m.pos.z = vr *Config.scaleR;	
+		// this.m.pos.z = vr *Config.scaleR;	
+		// height is height; will not scale
+		this.m.pos.z = vr;	
+		Trace.out("ball.height in m: " +this.m.pos.z);
 
 // this.m.ha++;
 		// horizontal
 		this.m.xoff = hr *Math.cos(this.m.ha *Math.PI /180) *Config.scaleR;
 		this.m.yoff = hr *Math.sin(this.m.ha *Math.PI /180) *Config.scaleR;
 		
-		// uggly	
+		// ugglyaggregatoaggregatorr	
 		this.m.pos.x = this.m.mp.x +this.m.xoff;
 		this.m.pos.y = this.m.mp.y -this.m.yoff;
 
@@ -1115,6 +1108,7 @@ Ball = function()
 
 	this.selectSprite = function()
 	{
+		// Trace.out("z:" +this.m.pos.z *5); // there is 5 sprites (for 5 meters?)
 		magie = parseInt(this.m.pos.z);
 		if(0 > magie){ magie = 0; }
 		else if(5 < magie){ magie = 5; }
@@ -1150,12 +1144,15 @@ Ball = function()
 	}
 }
 
-Nudge = function(ha, va, v, kaka)
+Nudge = function(ha, va, v, toffset)
 {
 	this.ha = ha;
 	this.va = va;
 	this.v = v;
-	this.kaka = kaka;
+	// time offset of movement calc
+	// for that player can controll the ball
+	// somewhat scheissig aber was solls
+	this.toffset = toffset;
 }
 
 Pos = function(x, y, z)
@@ -2093,37 +2090,31 @@ testSwitchBody = function(){
 	ClientM.selectedP.switchBody();
 }
 testFullscreen = function(){
-	if(false){}
-	else if(ClientM.outbuff.requestFullscreen){ 
-		ClientM.outbuff.requestFullscreen(); 
-	}
-	else if(ClientM.outbuff.mozRequestFullScreen){ 
-		ClientM.outbuff.mozRequestFullScreen(); 
-	}
-	else if(ClientM.outbuff.webkitRequestFullscreen){ 
-		ClientM.outbuff.webkitRequestFullscreen(); 
-	}
+	if(false){ return false; }
+	else if(ClientM.outbuff.requestFullscreen){ ClientM.outbuff.requestFullscreen(); }
+	else if(ClientM.outbuff.mozRequestFullScreen){ ClientM.outbuff.mozRequestFullScreen(); }
+	else if(ClientM.outbuff.webkitRequestFullscreen){ ClientM.outbuff.webkitRequestFullscreen(); }
 }
 testKick = function(idx){
 	Controller.bindCam(ClientM.ball);
 	switch(idx){
 		case 1:
-			ClientM.ball.nudge(new Nudge(+090, +90, +2, 0.25));
+			ClientM.ball.nudge(new Nudge(+090, +090, +3.00, 0.25));
 			break;
 		case 2:
-			ClientM.ball.nudge(new Nudge(-090, +1, +2, 0.25));
+			ClientM.ball.nudge(new Nudge(-090, +025, +2.00, 0.25));
 			break;
 		case 3:
-			ClientM.ball.nudge(new Nudge(+056, +10, +2, 0.25));
+			ClientM.ball.nudge(new Nudge(+090, +018, +1.20, 0.25));
 			break;
 		case 4:
-			ClientM.ball.nudge(new Nudge(+120, +20, +1, 0.25));
+			ClientM.ball.nudge(new Nudge(+120, +020, +1.00, 0.25));
 			break;
 		case 5: 
-			ClientM.ball.nudge(new Nudge(-90, 0, +1, 1));
+			ClientM.ball.nudge(new Nudge(-090, +000, +1.00, 1.00));
 			break;
 		case 6: 
-			ClientM.ball.nudge(new Nudge(-090, +45, +1, 0.25));
+			ClientM.ball.nudge(new Nudge(-090, +045, +1.00, 0.25));
 			break;
 		case 7:
 			break;
