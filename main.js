@@ -1,6 +1,6 @@
 Config = 
 {
-	gtick:          30,    // playtime (pseudothread)
+	gtick:          10,    // playtime (pseudothread)
 	teamSize:       11,    // diss how many players in a team
 	// ------------------
 	sprites:        "./assets/sprites.png",    // diss i do not know about
@@ -985,7 +985,7 @@ Ball = function()
 	this.m.t = 0; // nudge cycles
 	this.m.mn = new Nudge(0, 0, 0, 1); // copy of nudge
 	this.m.mp = this.m.pos // copy if pos
-	this.m.flight = 0.0246; // velocity loss of a ball in the air ... :))
+	this.m.flight = 0.082; // velocity loss of a ball in the air ... :))
 	this.m.xoff = 0;
 	this.m.yoff = 0;
 	this.m.zoff = 0;
@@ -1070,7 +1070,7 @@ Ball = function()
 		this.m.t += 1 /(1000 /Config.gtick); 
 		
 		/* speed of *this lowers by magic "ball flight thingy value" whithin in each tick */
-		this.m.v -= this.m.flight; 
+		this.m.v -= this.m.t *this.m.flight; 
 		
 		vr = this.m.v *this.m.t *Math.sin(this.m.va /180 *Math.PI) -(this.m.g /2 *this.m.t *this.m.t);
 		hr = this.m.v *this.m.t *Math.cos(this.m.va /180 *Math.PI);
@@ -2104,7 +2104,7 @@ testKick = function(idx){
 			ClientM.ball.nudge(new Nudge(+090, +090, +3.00, 0.25));
 			break;
 		case 2:
-			ClientM.ball.nudge(new Nudge(-090, +080, +3.00, 0.25));
+			ClientM.ball.nudge(new Nudge(-090, +026, +2.00, 0.25));
 			break;
 		case 3:
 			ClientM.ball.nudge(new Nudge(+090, +018, +1.20, 0.25));
