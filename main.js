@@ -9,8 +9,8 @@ Config =
 	playerSpriteH:  64,    // height of player sprite
 	ballSpriteW:    64,    // width of ball sprite
 	ballSpriteH:    64,    // heigth of ball sprite
-	fieldSpriteW:  360,    // width of background sprite 
-	fieldSpriteH:  240,    // height of background sprite 
+	fieldSpriteW:  240,    // width of background sprite 
+	fieldSpriteH:  360,    // height of background sprite 
 	// ------------------ 
 	keyWest:        37,    // key left
 	keyNorth:       38,    // key up
@@ -992,6 +992,7 @@ Ball = function()
 	this.m.xoff = 0;
 	this.m.yoff = 0;
 	this.m.zoff = 0;
+	this.m.fck = 0;
 	
 	this.setPos = function(p)
 	{
@@ -1056,6 +1057,8 @@ Ball = function()
 		this.m.mn = n;
 		// rec pos of nudge
 		this.m.mp = this.m.pos; 
+		// just testn
+		this.m.fck = 5 -Math.random() *10;
 	},
 
 	this.run = function()
@@ -1090,7 +1093,16 @@ Ball = function()
 			this.m.pos.z = 0;
 		}
 
-// this.m.ha++;
+
+
+this.m.ha +=this.m.fck;
+this.m.fck--;
+if(this.m.fck <= 0){ 
+	this.m.fck = 0; 
+}
+
+
+
 		// horizontal
 		this.m.hv -= this.m.fr;
 		hr = this.m.hv *this.m.ht *Math.cos(this.m.va /180 *Math.PI);
