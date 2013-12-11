@@ -928,7 +928,7 @@ BShadow = function()
 		this.m.pos.x = ball.m.pos.x;
 		this.m.pos.y = ball.m.pos.y;	
 		// calcs offset of shadow
-		temp = ball.m.pos.z *Config.scaleR /3;
+		temp = ball.m.pos.z;
 		if(temp <= 0){ temp = 0; }
 		this.m.pos.x += temp;
 	},
@@ -978,14 +978,16 @@ Ball = function()
 	this.m.shadow = null; 
 	this.m.hit = new Rect(24, 24, this.m.spriteW -24, this.m.spriteH -24);
 	this.m.bound = new Rect(0, 0, this.m.spriteW, this.m.spriteH);
-	this.m.v = 0; // velocity
+	this.m.hv = 0; // velocity
+	this.m.vv = 0; // velocity
 	this.m.ha = 0; // horiz angle
 	this.m.va = 0; // vertic angle
 	this.m.g = 9.80665; 
-	this.m.t = 0; // nudge cycles
+	this.m.vt = 0; // nudge cycles
+	this.m.ht = 0; // nudge cycles
 	this.m.mn = new Nudge(0, 0, 0, 1); // copy of nudge
 	this.m.mp = this.m.pos // copy if pos
-	this.m.fr = 0.016; // velocity loss of a ball not in the air ... :))
+	this.m.fr = 0.019; // velocity loss of a ball not in the air ... :))
 	this.m.fa = 0.042; // velocity loss of a ball in the air ... :))
 	this.m.xoff = 0;
 	this.m.yoff = 0;
@@ -1013,7 +1015,10 @@ Ball = function()
 
 	this.init = function()
 	{
-		this.m.g = 9.80665 /(1000 /Config.gtick); // m /s /33
+		// meter pro sekunde
+		// meter *scaler /sekunde /tick
+		r = Config.scaleR /(1/(1000 /Config.gtick));
+		this.m.g /= r;
 		this.initShadow();
 		PaintReg.add(this, parseInt(this.m.pos.z));
 		HitReg.add(this);
@@ -1035,26 +1040,17 @@ Ball = function()
 	this.deselect = function(){
 	},
 
-	this.zBounce = function()
-	{
-		// Trace.out("zBounce():" +ClientM.cycles);
-		// this.nudge(this.m.mn);
-		// naaa...
-		// this.m.va *= -1;
-	},
-	
 	this.nudge = function(n)
 	{
 		this.m.va = n.va;
 		this.m.ha = n.ha;
-		this.m.v = n.v;
+		this.m.hv = n.v;
+		this.m.vv = n.v;
 		// authsc	
-		this.m.t = n.toffset;
-	
-		// test purpose
+		this.m.ht = n.toffset;
+		this.m.vt = n.toffset;
 		// rec nudge
-		// this.m.mn = n;
-	
+		this.m.mn = n;
 		// rec pos of nudge
 		this.m.mp = this.m.pos; 
 	},
@@ -1068,34 +1064,35 @@ Ball = function()
 		// this.m.v : canonball shot speed
 		
 		/* time increments by gtick */ 
-		this.m.t += 1 /(1000 /Config.gtick); 
-		
-		/* speed of *this lowers by magic "ball f thingy value" whithin in each tick */
-		if(this.m.pos.z > 0){ // up in the air
-			this.m.v -= this.m.fa; 
-		}
-		else { // rolling
-			this.m.v -= this.m.fr; 
-		}
-		vr = this.m.v *this.m.t *Math.sin(this.m.va /180 *Math.PI) -(this.m.g /2 *this.m.t *this.m.t);
-		hr = this.m.v *this.m.t *Math.cos(this.m.va /180 *Math.PI);
-		
-		// fixdiss	
-		// bounce or some
-		if(this.m.v <= 0){
-			hr = 0;
-			vr = 0;
-			this.zBounce();
-		}
+		this.m.ht += 1 /(1000 /Config.gtick); 
+		this.m.vt += 1 /(1000 /Config.gtick); 
 	
+		/* speed of *this lowers by magic "ball f thingy value" whithin in each tick */
+		this.m.vv -= this.m.fa;
+		
+		vr = this.m.vv *this.m.vt *Math.sin(this.m.va /180 *Math.PI) -(this.m.g *this.m.vt *this.m.vt);
+		
 		// the height
-		// this.m.pos.z = vr *Config.scaleR;	
-		// height is height; will not scale
-		this.m.pos.z = vr;	
-		Trace.out("ball.height in m: " +this.m.pos.z);
+		this.m.pos.z = vr *Config.scaleR;	
+		// Trace.out("ball.height in m: " +this.m.pos.z);
+
+		// zbounce
+		if(this.m.pos.z < 0){
+			this.m.mn.v /= 1.42;
+			if(this.m.mn.v > 0.2){
+				this.m.vv = this.m.mn.v;
+				this.m.vt = 0;
+				Trace.out("zbounce: " +ClientM.cycles +" : " +this.m.vv);
+			}
+			this.m.pos.z = 0;
+		}
 
 // this.m.ha++;
 		// horizontal
+		this.m.hv -= this.m.fr;
+		hr = this.m.hv *this.m.ht *Math.cos(this.m.va /180 *Math.PI);
+		if(hr <= 0){ hr = 0; }	
+		
 		this.m.xoff = hr *Math.cos(this.m.ha *Math.PI /180) *Config.scaleR;
 		this.m.yoff = hr *Math.sin(this.m.ha *Math.PI /180) *Config.scaleR;
 		
@@ -1114,7 +1111,7 @@ Ball = function()
 	this.selectSprite = function()
 	{
 		// Trace.out("z:" +this.m.pos.z *5); // there is 5 sprites (for 5 meters?)
-		magie = parseInt(this.m.pos.z);
+		magie = parseInt(this.m.pos.z /Config.scaleR);
 		if(0 > magie){ magie = 0; }
 		else if(5 < magie){ magie = 5; }
 		this.m.spriteX = magie; // sprites den höhen zuordnen...
@@ -1149,6 +1146,10 @@ Ball = function()
 	}
 }
 
+// horiz angle
+// vertical angle
+// velocity
+// toffset
 Nudge = function(ha, va, v, toffset)
 {
 	this.ha = ha;
@@ -1479,7 +1480,7 @@ Player = function()
 	{
 		switch(target.m.type){ 
 			case ClientM.TYPE_BALL: 
-				if(ClientM.ball.m.pos.z > (this.m.pos.z +this.m.height)){
+				if(target.m.pos.z /Config.scaleR > (this.m.pos.z +this.m.height)){
 					Trace.out("ball is way too high up: " 
 						+ClientM.cycles 
 						+": ball.z: " 
@@ -1533,6 +1534,9 @@ Player = function()
 	{
 		Controller.bindCam(this);
 		ha = 0;	
+		va = 0;
+		ts = 0;
+		vc = 0;	
 		switch(this.m.face){
 			case ClientM.NORTH:
 				ha = +90;
@@ -1555,14 +1559,18 @@ Player = function()
 		}
 	
 		// nudge is not the guide	
-		if(ClientM.BACK == this.m.rdir){  
-			ClientM.ball.nudge(new Nudge(ha, 0, +0.5, 0.5));
+		if(ClientM.AHEAD == this.m.rdir){  
+			va = 0.0;
+			ts = 1.0; 
+			vc = 0.5;
 		}
 		else {
-			// now dissis...	
-			ClientM.ball.nudge(new Nudge(ha, +5, +0.5, 1));
-			Trace.out("guideBall():" +ClientM.cycles);
+			va = 0.0;
+			ts = 0.3;
+			vc = 0.5;
+			
 		}
+		ClientM.ball.nudge(new Nudge(ha, va, vc, ts));
 		
 		// this.m.team.dispatch({ref: this, message: PlayerMessage.BALL_GUIDED});	
 	}
@@ -2106,10 +2114,10 @@ testKick = function(idx){
 	Controller.bindCam(ClientM.ball);
 	switch(idx){
 		case 1:
-			ClientM.ball.nudge(new Nudge(+090, +090, +3.00, 0.25));
+			ClientM.ball.nudge(new Nudge(+070, +050, +1.20, 0.50));
 			break;
 		case 2:
-			ClientM.ball.nudge(new Nudge(-090, +032, +2.00, 0.50));
+			ClientM.ball.nudge(new Nudge(-090, +032, +1.00, 0.50));
 			break;
 		case 3:
 			ClientM.ball.nudge(new Nudge(+090, +018, +1.20, 0.25));
@@ -2121,9 +2129,10 @@ testKick = function(idx){
 			ClientM.ball.nudge(new Nudge(-090, +000, +1.00, 1.00));
 			break;
 		case 6: 
-			ClientM.ball.nudge(new Nudge(-090, +045, +1.00, 0.25));
+			ClientM.ball.nudge(new Nudge(-090, +090, +5.00, 0.25));
 			break;
 		case 7:
+			ClientM.ball.nudge(new Nudge(+090, +045, +1.00, 0.25));
 			break;
 		case 8:
 			break;
