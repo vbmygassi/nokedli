@@ -36,8 +36,8 @@ Config =
 	posRecLength:   10,     // thel length of recorded player positions
 	camRunOffset:  100,     // yoffset of cam (switches at heading of player)
 	// ------------------
-	camSlowDownXR:   4,     // slowdown rate of cam
-	camSlowDownYR:   4,
+	camSlowDownXR:    4,    // slowdown rate of cam
+	camSlowDownYR:    4,
 	// ------------------
 	drawBounds:   false,
 	drawSprites:  true,
@@ -987,8 +987,8 @@ Ball = function()
 	this.m.ht = 0; // nudge cycles
 	this.m.mn = new Nudge(0, 0, 0, 1); // copy of nudge
 	this.m.mp = this.m.pos // copy if pos
-	this.m.fr = 0.019; // velocity loss of a ball not in the air ... :))
-	this.m.fa = 0.042; // velocity loss of a ball in the air ... :))
+	this.m.fr = 0.80; // velocity loss of a ball not in the air ... :))
+	this.m.fa = 2.00; // velocity loss of a ball in the air ... :))
 	this.m.xoff = 0;
 	this.m.yoff = 0;
 	this.m.zoff = 0;
@@ -1019,6 +1019,9 @@ Ball = function()
 		// meter *scaler /sekunde /tick
 		r = Config.scaleR /(1/(1000 /Config.gtick));
 		this.m.g /= r;
+		// this.m.g /= Config.scaleR;
+		this.m.fa /= Config.scaleR;
+		this.m.fr /= Config.scaleR;
 		this.initShadow();
 		PaintReg.add(this, parseInt(this.m.pos.z));
 		HitReg.add(this);
@@ -1091,6 +1094,7 @@ Ball = function()
 		// horizontal
 		this.m.hv -= this.m.fr;
 		hr = this.m.hv *this.m.ht *Math.cos(this.m.va /180 *Math.PI);
+		// hr = this.m.vv *this.m.vt *Math.cos(this.m.va /180 *Math.PI);
 		if(hr <= 0){ hr = 0; }	
 		
 		this.m.xoff = hr *Math.cos(this.m.ha *Math.PI /180) *Config.scaleR;
@@ -2114,10 +2118,10 @@ testKick = function(idx){
 	Controller.bindCam(ClientM.ball);
 	switch(idx){
 		case 1:
-			ClientM.ball.nudge(new Nudge(+070, +050, +1.20, 0.50));
+			ClientM.ball.nudge(new Nudge(+070, +050, +1.20, 0.25));
 			break;
 		case 2:
-			ClientM.ball.nudge(new Nudge(-090, +032, +1.00, 0.50));
+			ClientM.ball.nudge(new Nudge(-090, +032, +2.00, 0.25));
 			break;
 		case 3:
 			ClientM.ball.nudge(new Nudge(+090, +018, +1.20, 0.25));
@@ -2129,14 +2133,16 @@ testKick = function(idx){
 			ClientM.ball.nudge(new Nudge(-090, +000, +1.00, 1.00));
 			break;
 		case 6: 
-			ClientM.ball.nudge(new Nudge(-090, +090, +5.00, 0.25));
+			ClientM.ball.nudge(new Nudge(-090, +068, +2.00, 0.25));
 			break;
 		case 7:
 			ClientM.ball.nudge(new Nudge(+090, +045, +1.00, 0.25));
 			break;
 		case 8:
+			ClientM.ball.nudge(new Nudge(-090, +089, +3.00, 0.25));
 			break;
 		case 9:
+			ClientM.ball.nudge(new Nudge(+090, +045, +2.00, 0.25));
 			break;
 		case 10:
 			break;
