@@ -1059,6 +1059,7 @@ Ball = function()
 		this.m.mp = this.m.pos; 
 		// just testn
 		this.m.fck = 5 -Math.random() *10;
+		Trace.out("nudge():" +this.m.fck);
 	},
 
 	this.run = function()
@@ -2151,14 +2152,16 @@ testKick = function(idx){
 			ClientM.ball.nudge(new Nudge(+090, +045, +1.00, 0.25));
 			break;
 		case 8:
-			ClientM.ball.nudge(new Nudge(-090, +089, +3.00, 0.25));
+			ClientM.ball.nudge(new Nudge(-090, +045, +1.40, 1.00));
 			break;
 		case 9:
-			ClientM.ball.nudge(new Nudge(+090, +045, +2.00, 0.25));
+			ClientM.ball.nudge(new Nudge(+090, +045, +1.40, 1.00));
 			break;
 		case 10:
+			ClientM.ball.nudge(new Nudge(+000, +045, +1.50, 1.00));
 			break;
 		case 11:
+			ClientM.ball.nudge(new Nudge(+180, +045, +1.50, 1.00));
 			break;	
 	}
 }
