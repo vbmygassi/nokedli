@@ -1482,6 +1482,8 @@ Player = function()
 						+": player.h: " 
 						+(this.m.pos.z +this.m.height)
 					);
+					Controller.pauseClock()
+					Trace.out("clock paused ->[p]");
 					break;
 				}
 				if(this.m.iSig.kickL){
@@ -2102,7 +2104,7 @@ testKick = function(idx){
 			ClientM.ball.nudge(new Nudge(+090, +090, +3.00, 0.25));
 			break;
 		case 2:
-			ClientM.ball.nudge(new Nudge(-090, +025, +2.00, 0.25));
+			ClientM.ball.nudge(new Nudge(-090, +080, +3.00, 0.25));
 			break;
 		case 3:
 			ClientM.ball.nudge(new Nudge(+090, +018, +1.20, 0.25));
