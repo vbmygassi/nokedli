@@ -992,8 +992,9 @@ Ball = function()
 	this.m.xoff = 0;
 	this.m.yoff = 0;
 	this.m.zoff = 0;
-	this.m.fck = 0;
-	
+	this.m.hrot = 0;
+	this.m.vrot = 0;
+		
 	this.setPos = function(p)
 	{
 		this.m.pos = p;
@@ -1050,6 +1051,8 @@ Ball = function()
 		this.m.ha = n.ha;
 		this.m.hv = n.v;
 		this.m.vv = n.v;
+		this.m.hrot = n.hrot;
+		this.m.vrot = n.vrot;
 		// authsc	
 		this.m.ht = n.toffset;
 		this.m.vt = n.toffset;
@@ -1057,9 +1060,6 @@ Ball = function()
 		this.m.mn = n;
 		// rec pos of nudge
 		this.m.mp = this.m.pos; 
-		// just testn
-		this.m.fck = 5 -Math.random() *10;
-		Trace.out("nudge():" +this.m.fck);
 	},
 
 	this.run = function()
@@ -1077,6 +1077,13 @@ Ball = function()
 		/* speed of *this lowers by magic "ball f thingy value" whithin in each tick */
 		this.m.vv -= this.m.fa;
 		
+		// vertical offset: magaths senkeshuss
+		this.m.va -= this.m.vrot;
+		this.m.vrot--;
+		if(this.m.vrot < 0){
+			this.m.vrot = 0;
+		}	
+	
 		vr = this.m.vv *this.m.vt *Math.sin(this.m.va /180 *Math.PI) -(this.m.g *this.m.vt *this.m.vt);
 		
 		// the height
@@ -1094,15 +1101,12 @@ Ball = function()
 			this.m.pos.z = 0;
 		}
 
-
-
-this.m.ha +=this.m.fck;
-this.m.fck--;
-if(this.m.fck <= 0){ 
-	this.m.fck = 0; 
-}
-
-
+		// offset horiz (aussenrist... 
+		this.m.ha +=this.m.hrot;
+		this.m.hrot--;
+		if(this.m.hrot <= 0){ 
+			this.m.hrot = 0; 
+		}
 
 		// horizontal
 		this.m.hv -= this.m.fr;
@@ -1167,10 +1171,12 @@ if(this.m.fck <= 0){
 // vertical angle
 // velocity
 // toffset
-Nudge = function(ha, va, v, toffset)
+Nudge = function(ha, va, v, toffset, hrot, vrot)
 {
 	this.ha = ha;
 	this.va = va;
+	this.hrot = hrot;	
+	this.vrot = vrot;
 	this.v = v;
 	// time offset of movement calc
 	// for that player can controll the ball
@@ -2131,37 +2137,46 @@ testKick = function(idx){
 	Controller.bindCam(ClientM.ball);
 	switch(idx){
 		case 1:
-			ClientM.ball.nudge(new Nudge(+070, +050, +1.20, 0.25));
+			ClientM.ball.nudge(
+				new Nudge(
+					-090,  // horiz 
+					+050,  // vert
+					+1.20, // power 
+					+0.25, // toffset
+					+030,  // horiz rot
+					-012   // vert rot
+				)
+			);
 			break;
 		case 2:
-			ClientM.ball.nudge(new Nudge(-090, +032, +2.00, 0.25));
+			ClientM.ball.nudge(new Nudge(-090, +032, +2.00, 0.25, +001, 0));
 			break;
 		case 3:
-			ClientM.ball.nudge(new Nudge(+090, +018, +1.20, 0.25));
+			ClientM.ball.nudge(new Nudge(+090, +018, +1.20, 0.25, +003, 0));
 			break;
 		case 4:
-			ClientM.ball.nudge(new Nudge(-090, +000, +1.00, 0.25));
+			ClientM.ball.nudge(new Nudge(-090, +000, +1.00, 0.25, +004 ,0));
 			break;
 		case 5: 
-			ClientM.ball.nudge(new Nudge(-090, +000, +1.00, 1.00));
+			ClientM.ball.nudge(new Nudge(-090, +000, +1.00, 1.00, +005, 0));
 			break;
 		case 6: 
-			ClientM.ball.nudge(new Nudge(-090, +068, +2.00, 0.25));
+			ClientM.ball.nudge(new Nudge(-090, +068, +2.00, 0.25, +006, 0));
 			break;
 		case 7:
-			ClientM.ball.nudge(new Nudge(+090, +045, +1.00, 0.25));
+			ClientM.ball.nudge(new Nudge(+090, +045, +1.00, 0.25, 0, 0));
 			break;
 		case 8:
-			ClientM.ball.nudge(new Nudge(-090, +045, +1.40, 1.00));
+			ClientM.ball.nudge(new Nudge(-090, +045, +1.40, 1.00, +002, 0));
 			break;
 		case 9:
-			ClientM.ball.nudge(new Nudge(+090, +045, +1.40, 1.00));
+			ClientM.ball.nudge(new Nudge(+090, +045, +1.40, 1.00, +001, 0));
 			break;
 		case 10:
-			ClientM.ball.nudge(new Nudge(+000, +045, +1.50, 1.00));
+			ClientM.ball.nudge(new Nudge(+000, +045, +1.50, 1.00, 0, 0));
 			break;
 		case 11:
-			ClientM.ball.nudge(new Nudge(+180, +045, +1.50, 1.00));
+			ClientM.ball.nudge(new Nudge(+180, +045, +1.50, 1.00, 0, 0));
 			break;	
 	}
 }
