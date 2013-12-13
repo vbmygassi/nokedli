@@ -1078,11 +1078,13 @@ Ball = function()
 		this.m.vv -= this.m.fa;
 		
 		// vertical offset: magaths senkeshuss
-		this.m.va -= this.m.vrot;
-		this.m.vrot--;
-		if(this.m.vrot < 0){
-			this.m.vrot = 0;
-		}	
+		if(this.m.pos.z > 0){
+			this.m.va -= this.m.vrot;
+			this.m.vrot--;
+			if(this.m.vrot < 0){ 
+				this.m.vrot = 0; 
+			}	
+		}
 	
 		vr = this.m.vv *this.m.vt *Math.sin(this.m.va /180 *Math.PI) -(this.m.g *this.m.vt *this.m.vt);
 		
@@ -1102,10 +1104,12 @@ Ball = function()
 		}
 
 		// offset horiz (aussenrist... 
-		this.m.ha +=this.m.hrot;
-		this.m.hrot--;
-		if(this.m.hrot <= 0){ 
-			this.m.hrot = 0; 
+		if(this.m.pos.z > 0){
+			this.m.ha +=this.m.hrot;
+			this.m.hrot--;
+			if(this.m.hrot <= 0){ 
+				this.m.hrot = 0; 
+			}
 		}
 
 		// horizontal
@@ -1593,7 +1597,7 @@ Player = function()
 			vc = 0.5;
 			
 		}
-		ClientM.ball.nudge(new Nudge(ha, va, vc, ts));
+		ClientM.ball.nudge(new Nudge(ha, va, vc, ts, 0, 0));
 		
 		// this.m.team.dispatch({ref: this, message: PlayerMessage.BALL_GUIDED});	
 	}
@@ -2140,11 +2144,11 @@ testKick = function(idx){
 			ClientM.ball.nudge(
 				new Nudge(
 					-090,  // horiz 
-					+050,  // vert
-					+1.20, // power 
-					+0.25, // toffset
-					+030,  // horiz rot
-					-012   // vert rot
+					+030,  // vert
+					+1.50, // power 
+					+0.50, // toffset
+					+27.0, // horiz rot
+					+0.20   // vert rot
 				)
 			);
 			break;
@@ -2173,10 +2177,10 @@ testKick = function(idx){
 			ClientM.ball.nudge(new Nudge(+090, +045, +1.40, 1.00, +001, 0));
 			break;
 		case 10:
-			ClientM.ball.nudge(new Nudge(+000, +045, +1.50, 1.00, 0, 0));
+			ClientM.ball.nudge(new Nudge(+000, +045, +1.50, 1.00, +001, 0));
 			break;
 		case 11:
-			ClientM.ball.nudge(new Nudge(+180, +045, +1.50, 1.00, 0, 0));
+			ClientM.ball.nudge(new Nudge(+180, +045, +1.50, 1.00, +002, 0));
 			break;	
 	}
 }
